@@ -13,8 +13,21 @@ import AddBlogPage from "./pages/AddBlogPage";
 import PageNotFound from "./pages/PageNotFound";
 import DetailPage from "./pages/DetailPage";
 import EditBlogPage from "./pages/EditeBlogPage";
+import axios from "axios";
+import { BlogDetails } from "./types";
+import { toast } from "react-toastify";
 
 const App = () => {
+  const createBlog = (data: Omit<BlogDetails, "id" | "slug">) => {
+    axios
+      .post("http://127.0.0.1:8000/api/posts/", data)
+      .then((res) => {
+        console.log(res.data);
+        toast.success("Blog added successfully!");
+      })
+      .catch((err) => console.log(err.message));
+  };
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<MainLayout />}>
@@ -22,8 +35,11 @@ const App = () => {
         <Route path="/program" element={<Trip />} />
         <Route path="/memories" element={<Memories />} />
         <Route path="/during" element={<During />} />
-        <Route path="/add-blog" element={<AddBlogPage />} />
-        <Route path="/blogs/slug" element={<DetailPage />} />
+        <Route
+          path="/add-blog"
+          element={<AddBlogPage createBlog={createBlog} />}
+        />
+        <Route path="/blogs/:slug" element={<DetailPage />} />
         <Route path="/blogs/edit/slug" element={<EditBlogPage />} />
 
         <Route path="*" element={<PageNotFound />} />

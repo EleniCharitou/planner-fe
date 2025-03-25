@@ -1,23 +1,40 @@
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
 import { IoReturnUpBack } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Modal from "../components/homepage/Modal";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { BlogDetails } from "../types";
+import Spinner from "../components/Spinner";
 // import Modal from '../components/Modal'
 
 const DetailPage = () => {
+  const { slug } = useParams();
+  const [blog, setBlog] = useState<BlogDetails | null>(null);
+
+  useEffect(() => {
+    axios
+      .get(`http://127.0.0.1:8000/api/posts/${slug}`)
+      .then((res) => {
+        console.log(res.data);
+        setBlog(res.data);
+      })
+      .catch((err) => err.message);
+  }, []);
+
   return (
     <div className="container mx-auto mt-20 px-4 py-8 border">
       <div className="max-w-2xl mx-auto">
-        <a href="#">
+        <Link to="/home">
           <span className="flex items-center">
             <IoReturnUpBack fontSize={25} />
             <p className="ml-1">Back</p>
           </span>
-        </a>
+        </Link>
 
         <h1 className="text-4xl font-extrabold blog-title mt-4 mb-4">
-          React-JS Full Course
+          {blog ? blog.title : <Spinner loading={true} />}
         </h1>
         <span className="mb-4 flex items-center">
           <Link to="/blogs/edit/slug">
@@ -39,37 +56,7 @@ const DetailPage = () => {
           </button>
         </span>
         <div className="prose prose-lg blog-body text-justify">
-          <p className="leading-8">
-            React.js, developed by Facebook, is a popular JavaScript library
-            used for building user interfaces, particularly single-page
-            applications. It allows developers to create reusable UI components,
-            promoting efficient and scalable code management. React follows a
-            component-based architecture, where each component maintains its own
-            state and renders independently, leading to more modular and
-            maintainable code.
-          </p>
-          <p className="leading-8">
-            A key feature of React is the virtual DOM (Document Object Model).
-            Instead of directly manipulating the actual DOM, React creates a
-            virtual representation of it. When the state of an object changes,
-            React updates the virtual DOM first, which then efficiently updates
-            the actual DOM, minimizing performance bottlenecks.
-          </p>
-          <p className="leading-8">
-            React also employs JSX (JavaScript XML), a syntax extension that
-            allows developers to write HTML-like code within JavaScript. This
-            enhances readability and makes writing components more intuitive.
-            Additionally, React hooks, introduced in version 16.8, enable state
-            and side-effect management within functional components, making them
-            more powerful and easier to manage compared to class components.
-          </p>
-          <p className="leading-8">
-            React ecosystem is vast, with numerous libraries and tools enhancing
-            its capabilities, such as Redux for state management and React
-            Router for navigation. Its strong community support and integration
-            with modern development practices make React a preferred choice for
-            building dynamic and responsive web applications.
-          </p>
+          <p className="leading-8">{blog?.content}</p>
         </div>
       </div>
 
