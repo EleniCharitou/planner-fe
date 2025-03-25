@@ -17,7 +17,6 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(newBlog);
     createBlog(newBlog);
     navigate("/home");
   };

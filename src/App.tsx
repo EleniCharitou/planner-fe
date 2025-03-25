@@ -22,8 +22,19 @@ const App = () => {
     axios
       .post("http://127.0.0.1:8000/api/posts/", data)
       .then((res) => {
-        console.log(res.data);
         toast.success("Blog added successfully!");
+      })
+      .catch((err) => console.log(err.message));
+  };
+
+  const editBlog = (
+    data: Omit<BlogDetails, "id" | "slug">,
+    slug: string | undefined
+  ) => {
+    axios
+      .put(`http://127.0.0.1:8000/api/posts/${slug}/`, data)
+      .then(() => {
+        toast.success("Blog updated successfully!");
       })
       .catch((err) => console.log(err.message));
   };
@@ -40,7 +51,10 @@ const App = () => {
           element={<AddBlogPage createBlog={createBlog} />}
         />
         <Route path="/blogs/:slug" element={<DetailPage />} />
-        <Route path="/blogs/edit/slug" element={<EditBlogPage />} />
+        <Route
+          path="/blogs/edit/:slug"
+          element={<EditBlogPage editBlog={editBlog} />}
+        />
 
         <Route path="*" element={<PageNotFound />} />
       </Route>

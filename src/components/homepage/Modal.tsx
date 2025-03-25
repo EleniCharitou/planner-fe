@@ -1,6 +1,19 @@
+import { useNavigate } from "react-router";
 import "../../style/Modal.css";
 
-const Modal = () => {
+interface ModalProps {
+  title: string;
+  changeModal: () => void;
+  deleteBlog: () => void;
+}
+const Modal: React.FC<ModalProps> = ({ title, changeModal, deleteBlog }) => {
+  const navigate = useNavigate();
+
+  const deleteCurrentBlog = () => {
+    deleteBlog();
+    changeModal();
+    navigate("/home");
+  };
   return (
     <div id="popup-modal" className="modal">
       <div className="modal-content">
@@ -8,6 +21,7 @@ const Modal = () => {
           type="button"
           className="close-button"
           data-modal-hide="popup-modal"
+          onClick={changeModal}
         >
           <svg
             className="close-icon"
@@ -43,12 +57,16 @@ const Modal = () => {
             />
           </svg>
           <h3 className="modal-title">
-            Are you sure you want to delete this product?
+            Are you sure you want to delete this blog - {title}?
           </h3>
-          <button type="button" className="confirm-button">
+          <button
+            type="button"
+            className="confirm-button"
+            onClick={deleteCurrentBlog}
+          >
             Yes, I'm sure
           </button>
-          <button type="button" className="cancel-button">
+          <button type="button" className="cancel-button" onClick={changeModal}>
             No, cancel
           </button>
         </div>
