@@ -14,6 +14,7 @@ const EditBlogPage: React.FC<EditBlogPageProps> = ({ editBlog }) => {
   const [blog, setBlog] = useState<BlogDetails | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [author, setAuthor] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const EditBlogPage: React.FC<EditBlogPageProps> = ({ editBlog }) => {
         setBlog(res.data);
         setTitle(res.data.title);
         setContent(res.data.content);
+        setAuthor(res.data.author);
       })
       .catch((err) => console.log(err.message));
   }, []);
@@ -30,6 +32,7 @@ const EditBlogPage: React.FC<EditBlogPageProps> = ({ editBlog }) => {
   const updatedBlog = {
     title: title,
     content: content,
+    author: author,
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

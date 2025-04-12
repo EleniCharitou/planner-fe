@@ -48,10 +48,14 @@ const DetailPage = () => {
             <p className="ml-1">Back</p>
           </span>
         </Link>
-
-        <h1 className="text-4xl font-extrabold blog-title mt-4 mb-4">
-          {blog ? blog.title : <Spinner loading={true} />}
-        </h1>
+        <div className=" flex items-center justify-between w-full space-x-4">
+          <h1 className="text-4xl font-extrabold blog-title mt-4 mb-4">
+            {blog ? blog.title : <Spinner loading={true} />}
+          </h1>
+          <p className="text-gray-600 text-md font-medium text-right whitespace-nowrap">
+            by {blog?.author}
+          </p>
+        </div>
         <span className="mb-4 flex items-center">
           <Link to={`/blogs/edit/${slug}`}>
             <button

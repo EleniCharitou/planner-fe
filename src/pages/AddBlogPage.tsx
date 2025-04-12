@@ -8,11 +8,13 @@ interface AddBlogPageProps {
 const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [author, setAuthor] = useState("user");
   const navigate = useNavigate();
 
   const newBlog: Omit<BlogDetails, "id" | "slug"> = {
     title: title,
     content: content,
+    author: author,
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -59,6 +61,21 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
             placeholder="Enter your message"
             required
           ></textarea>
+        </div>
+        <div className="mb-8">
+          <label
+            htmlFor="input"
+            className="block text-gray-700 text-sm font-bold mb-2"
+          >
+            Author
+          </label>
+          <input
+            id="input"
+            onChange={(e) => setAuthor(e.target.value)}
+            className="border-2 border-purple-900 rounded w-full py-2 px-3 text-gray-950 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="Enter author's name"
+            required
+          />
         </div>
         <div className="flex items-center justify-center">
           <button
