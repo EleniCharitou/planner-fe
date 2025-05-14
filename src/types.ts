@@ -24,3 +24,9 @@ export interface BlogDetails {
     cost: number;
     visited: boolean;
   }
+// new types
+  export type Id = string | number;
+  export type Column = {
+    id: Id;
+    title: string;
+  }
