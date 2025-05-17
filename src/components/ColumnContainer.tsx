@@ -2,13 +2,16 @@ import { useSortable } from "@dnd-kit/sortable";
 import DeleteIcon from "../icon/DeleteIcon";
 import { Column, Id } from "../types";
 import { CSS } from "@dnd-kit/utilities";
+import { useState } from "react";
 
 interface Props {
   column: Column;
   deleteColumn: (id: Id) => void;
+  updateColumn: (id: Id, title: string) => void;
 }
 const ColumnContainer = (props: Props) => {
-  const { column, deleteColumn } = props;
+  const { column, deleteColumn, updateColumn } = props;
+  const [editMode, setEditMode] = useState(false);
   const {
     setNodeRef,
     attributes,
@@ -21,6 +24,7 @@ const ColumnContainer = (props: Props) => {
     data: {
       type: "Column",
       column,
+      disabled: editMode,
     },
   });
 
@@ -42,7 +46,7 @@ const ColumnContainer = (props: Props) => {
                  rounded-md
                  flex
                  flex-col
-                 text-white
+                 
                  "
       >
         Hello, I'm leaving
@@ -55,6 +59,7 @@ const ColumnContainer = (props: Props) => {
       style={style}
       {...attributes}
       {...listeners}
+      onClick={() => setEditMode(true)}
       className="bg-gray-800
                  w-[350px]
                  h-[500px]
@@ -62,7 +67,6 @@ const ColumnContainer = (props: Props) => {
                  rounded-md
                  flex
                  flex-col
-                 text-white
                  "
     >
       <div
@@ -93,7 +97,22 @@ const ColumnContainer = (props: Props) => {
           >
             0
           </div>
-          {column.title}
+          {!editMode && column.title}
+          {editMode && (
+            <input
+              className="focus:border-rose-500 border rounded outline-none px-2 "
+              value={column.title}
+              onChange={(e) => updateColumn(column.id, e.target.value)}
+              autoFocus
+              onBlur={() => {
+                setEditMode(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter") return;
+                setEditMode(false);
+              }}
+            />
+          )}
         </div>
         <button onClick={() => deleteColumn(column.id)}>
           <DeleteIcon />

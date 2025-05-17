@@ -46,6 +46,14 @@ const KanbanBoard = () => {
     setColumns(filteredColumns);
   };
 
+  const updateColumn = (id: Id, title: string) => {
+    const newColumns = columns.map((col) => {
+      if (col.id !== id) return col;
+      return { ...col, title };
+    });
+    setColumns(newColumns);
+  };
+
   const onDragStart = (event: DragStartEvent) => {
     if (event.active.data.current?.type === "Column") {
       setActiveColumn(event.active.data.current.column);
@@ -79,9 +87,10 @@ const KanbanBoard = () => {
                  min-h-screen 
                  w-full 
                  items-center 
-                 overflow-x-auto 
+                 overflow-scroll 
                  overflow-y-hidden
-                 px-[40px]"
+                 px-[40px]
+                 "
     >
       <DndContext
         sensors={sensors}
@@ -96,6 +105,7 @@ const KanbanBoard = () => {
                   key={col.id}
                   column={col}
                   deleteColumn={deleteColumn}
+                  updateColumn={updateColumn}
                 />
               ))}
             </SortableContext>
@@ -105,7 +115,6 @@ const KanbanBoard = () => {
                      w-[350px] 
                      min-w-[350px] 
                      cursor-pointer 
-                     text-white
                      rounded-lg 
                      bg-gray-800
                      border-2 
@@ -129,6 +138,7 @@ const KanbanBoard = () => {
               <ColumnContainer
                 column={activeColumn}
                 deleteColumn={deleteColumn}
+                updateColumn={updateColumn}
               />
             )}
           </DragOverlay>,
