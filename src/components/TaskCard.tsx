@@ -2,6 +2,8 @@ import { useState } from "react";
 import DeleteIcon from "../icon/DeleteIcon";
 import { Task } from "../types";
 import { Id } from "react-toastify";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface Props {
   task: Task;
@@ -13,14 +15,52 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
   const [mouseIsOver, setMouseIsOver] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: task.id,
+    data: {
+      type: "Task",
+      task,
+    },
+    disabled: editMode,
+  });
+
+  const style = {
+    transition,
+    transform: CSS.Transform.toString(transform),
+  };
+
   const toggleEditMode = () => {
     setEditMode(!editMode);
     setMouseIsOver(false);
   };
 
+  if (isDragging) {
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="bg-zinc-900 p-2.5 h-[100px] min-h-[100px]
+                   items-center flex text-left rounded-xl 
+                   border-2 border-rose-500 opacity-30
+                   cursor-grab relative"
+      />
+    );
+  }
+
   if (editMode) {
     return (
       <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
         className="bg-zinc-900 p-2.5 h-[100px] min-h-[100px]
                    items-center flex text-left rounded-xl 
                    hover:ring-1 hover:ring-inset hover:ring-rose-500 
@@ -44,6 +84,10 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
 
   return (
     <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
       className="task bg-zinc-900 p-2.5 h-[100px] min-h-[100px]
                    items-center flex text-left rounded-xl 
                    hover:ring-1 hover:ring-inset hover:ring-rose-500 
