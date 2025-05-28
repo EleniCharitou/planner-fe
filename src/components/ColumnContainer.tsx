@@ -1,16 +1,22 @@
 import { useSortable } from "@dnd-kit/sortable";
 import DeleteIcon from "../icon/DeleteIcon";
-import { Column, Id } from "../types";
+import { Column, Id, Task } from "../types";
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
+import PlusIcon from "../icon/PlusIcon";
+import TaskCard from "./TaskCard";
 
 interface Props {
   column: Column;
   deleteColumn: (id: Id) => void;
   updateColumn: (id: Id, title: string) => void;
+  createTask: (columnId: Id) => void;
+  deleteTask: (id: Id) => void;
+  tasks: Task[];
 }
 const ColumnContainer = (props: Props) => {
-  const { column, deleteColumn, updateColumn } = props;
+  const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask } =
+    props;
   const [editMode, setEditMode] = useState(false);
   const {
     setNodeRef,
@@ -37,7 +43,7 @@ const ColumnContainer = (props: Props) => {
     return (
       <div
         className="bg-gray-800
-        opacity-60
+        opacity-30
         border-2
         border-rose-500
                  w-[350px]
@@ -48,9 +54,7 @@ const ColumnContainer = (props: Props) => {
                  flex-col
                  
                  "
-      >
-        Hello, I'm leaving
-      </div>
+      />
     );
   }
   return (
@@ -59,7 +63,6 @@ const ColumnContainer = (props: Props) => {
       style={style}
       {...attributes}
       {...listeners}
-      onClick={() => setEditMode(true)}
       className="bg-gray-800
                  w-[350px]
                  h-[500px]
@@ -97,7 +100,11 @@ const ColumnContainer = (props: Props) => {
           >
             0
           </div>
-          {!editMode && column.title}
+          {!editMode && (
+            <div onClick={() => setEditMode(true)} className="cursor-pointer">
+              {column.title}
+            </div>
+          )}
           {editMode && (
             <input
               className="focus:border-rose-500 border rounded outline-none px-2 "
@@ -119,8 +126,24 @@ const ColumnContainer = (props: Props) => {
         </button>
       </div>
 
-      <div className="flex flex-grow">Content</div>
-      <div>Footer</div>
+      <div
+        className="flex flex-grow flex-col gap-4 p-4
+                      overflow-x-hidden overflow-y-auto"
+      >
+        {tasks.map((task) => (
+          <TaskCard key={task.id} task={task} deleteTask={deleteTask} />
+        ))}
+      </div>
+      <button
+        className="flex gap-2 items-center bg-gray-800
+                 border-gray-800 border-2 rounded-md p-4
+                 hover:bg-zinc-900 
+                 active:bg-black"
+        onClick={() => createTask(column.id)}
+      >
+        <PlusIcon />
+        Add task
+      </button>
     </div>
   );
 };

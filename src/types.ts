@@ -26,7 +26,13 @@ export interface BlogDetails {
   }
 // new types
   export type Id = string | number;
-  export type Column = {
+  export interface Column {
     id: Id;
     title: string;
   }
+
+  export interface Task {
+    id: Id,
+    columnId: Id;
+    content: string;
+  };
