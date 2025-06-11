@@ -110,7 +110,7 @@ const ColumnContainer = ({
                      text-sm
                      rounded-full"
           >
-            0
+            {tasks.length}
           </div>
           {!editMode && (
             <div onClick={() => setEditMode(true)} className="cursor-pointer">
