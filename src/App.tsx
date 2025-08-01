@@ -16,6 +16,7 @@ import EditBlogPage from "./pages/EditeBlogPage";
 import axios from "axios";
 import { BlogDetails } from "./types";
 import { toast } from "react-toastify";
+import NewMainLayout from "./new_pages/NewMainLayout";
 
 const App = () => {
   const createBlog = (data: Omit<BlogDetails, "id" | "slug">) => {
@@ -41,7 +42,7 @@ const App = () => {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<MainLayout />}>
+      <Route path="/" element={<NewMainLayout />}>
         <Route path="/home" element={<Home />} />
         <Route path="/program" element={<Trip />} />
         <Route path="/memories" element={<Memories />} />
