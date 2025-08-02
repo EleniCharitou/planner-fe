@@ -19,11 +19,14 @@ const BlogContainer = () => {
   }, []);
 
   return (
-    <div className="container mx-auto mt-8 mb-8 px-4 flex flex-wrap justify-evenly">
-      <Spinner loading={loading} />
-      {blogs.map((blog) => (
-        <BlogCard key={blog.id} blog={blog} />
-      ))}
+    <div className="flex justify-between items-start gap-2 p-1">
+      {loading ? (
+        <div className="flex justify-center w-full">
+          <Spinner loading={loading} />
+        </div>
+      ) : (
+        blogs.slice(0, 3).map((blog) => <BlogCard key={blog.id} blog={blog} />)
+      )}
     </div>
   );
 };

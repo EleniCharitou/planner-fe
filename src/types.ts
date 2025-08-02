@@ -4,6 +4,7 @@ export interface BlogDetails {
     content: string;
     slug: string;
     author: string;
+    picture: string | null;
   }
 
   export interface ColumnData {

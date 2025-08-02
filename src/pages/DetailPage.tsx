@@ -18,7 +18,7 @@ const DetailPage = () => {
 
   useEffect(() => {
     axios
-      .get(`http://127.0.0.1:8000/api/posts/${slug}`)
+      .get(`http://127.0.0.1:8000/api/posts/${slug}/`)
       .then((res) => {
         setBlog(res.data);
         setTitle(res.data.title);

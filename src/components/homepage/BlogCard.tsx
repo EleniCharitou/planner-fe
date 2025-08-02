@@ -5,27 +5,28 @@ interface BlogCardProps {
   blog: BlogDetails;
 }
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
-  const blogContent = blog.content.substring(0, 150) + " ...";
+  const blogContent = blog.content.substring(0, 80) + " ...";
+
+  const baseURL = "http://127.0.0.1:8000";
+  const imageUrl = blog.picture ? `${baseURL}${blog.picture}` : undefined;
 
   return (
-    <div className="max-w-sm bg-white mb-6 border border-gray-200 rounded-lg shadow">
+    <div className="flex-1 max-w-60 rounded-xl shadow bg-amber-50 p-1 flex flex-col">
       <img
-        className="rounded-t-lg"
-        src="/docs/images/blog/image-1.jpg"
-        alt=""
+        className="rounded-xl w-full h-40 object-cover mb-2"
+        src={imageUrl}
+        alt={blog.title}
       />
-      <div className="p-5">
-        <h5 className="mb-2 text-2xl font-bold tracking-tight">
-          {blog?.title}
-        </h5>
-        <p className="mb-3 font-normal text-gray-700">{blogContent}</p>
-        <Link
-          to={`/blogs/${blog.slug}`}
-          className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Read more
-        </Link>
-      </div>
+      <h5 className="mb-2 text-teal-950 font-bold tracking-tight text-sm leading-tight flex-grow">
+        {blog?.title}
+      </h5>
+      {/* <p className="mb-3 font-normal text-gray-700">{blogContent}</p> */}
+      <Link
+        to={`/blogs/${blog.slug}`}
+        className="text-end text-sm font-medium text-teal-500 hover:text-teal-800 p-1 mt-auto"
+      >
+        Read more
+      </Link>
     </div>
   );
 };
