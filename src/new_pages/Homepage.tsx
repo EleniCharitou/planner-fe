@@ -1,11 +1,19 @@
-import React from "react";
-import { MapPin, Calendar, BookOpen, Video } from "lucide-react";
-import { FaArrowRight } from "react-icons/fa";
-import { MdCardTravel, MdOutlineModeOfTravel } from "react-icons/md";
+import { FaLocationArrow } from "react-icons/fa";
 import BlogContainer from "../components/homepage/BlogContainer";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function Homepage() {
+  const [isClicked, setIsClicked] = useState(false);
+  const navigate = useNavigate();
+
+  const handlePlanTripClick = () => {
+    setIsClicked(true);
+    setTimeout(() => {
+      navigate("/program");
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen bg-amber-50 p-6">
       <div className="max-w-6xl mx-auto">
@@ -43,15 +51,29 @@ function Homepage() {
             </div>
           </div>
 
-          {/* Second rectangle: 2 columns, 1 row */}
+          {/* Second rectangle: 1 column, 1 row */}
           <button
-            className="col-span-1 row-span-1/2 bg-teal-500 rounded-lg shadow-lg flex items-center justify-center
-                        hover:bg-teal-800 hover:cursor-pointer"
+            onClick={handlePlanTripClick}
+            className="col-span-1 row-span-1 bg-teal-500 rounded-lg shadow-lg flex items-center justify-center
+                        hover:bg-teal-800 hover:cursor-pointer relative overflow-visible transition-all 
+                        duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl hover:shadow-teal-500/50 group"
           >
-            <div className="text-white text-left">
-              <h2 className="text-xl font-semibold">
+            <div
+              className="absolute inset-0 bg-gradient-to-b from-yellow-100  via-teal-500  to-teal-800
+                            opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"
+            ></div>
+            <div className="text-white text-left relative z-10">
+              <h2 className="text-xl font-semibold p-4">
                 Plan your trip
-                <MdCardTravel className="inline-flex pl-2" size="40px" />
+                <FaLocationArrow
+                  className={`inline-flex pl-2 transition-all duration-1000 ease-out
+                             group-hover:translate-x-7 group-hover:-translate-y-7 group-hover:rotate-10 ${
+                               isClicked
+                                 ? "rotate-[360deg] opacity-0 scale-100"
+                                 : ""
+                             }`}
+                  size="30px"
+                />
               </h2>
             </div>
           </button>
@@ -61,7 +83,7 @@ function Homepage() {
           hover:bg-gray-500 hover:cursor-not-allowed"
           >
             <div className="text-white text-center">
-              <h2 className="text-2xl font-semibold m-2 p-8">
+              <h2 className="text-2xl font-semibold m-2 p-4">
                 Generate your memory video
               </h2>
             </div>

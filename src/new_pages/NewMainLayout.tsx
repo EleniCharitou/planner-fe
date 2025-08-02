@@ -1,11 +1,10 @@
 import { Link, Outlet } from "react-router-dom";
-import Homepage from "./Homepage";
 import { MdCardTravel, MdOutlineModeOfTravel } from "react-icons/md";
 import { BookOpen, Calendar, Video } from "lucide-react";
 
 function NewMainLayout() {
   return (
-    <div className="min-h-screen bg-amber-50">
+    <div className="min-h-screen">
       {/* Navbar */}
       <nav className="bg-teal-600 shadow-lg">
         <div className="max-w-6xl mx-auto px-6">
@@ -23,14 +22,14 @@ function NewMainLayout() {
             <div className="hidden md:flex space-x-8">
               <Link
                 to="/"
-                className="text-white hover:text-amber-200 transition-colors duration-200 flex items-center space-x-1"
+                className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
               >
                 <span>Home</span>
               </Link>
 
               <Link
                 to="/program"
-                className="text-white hover:text-amber-200 transition-colors duration-200 flex items-center space-x-1"
+                className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
               >
                 <MdOutlineModeOfTravel size="18px" />
                 <span>Plan Trip</span>
@@ -38,30 +37,30 @@ function NewMainLayout() {
 
               <Link
                 to="/memories"
-                className="text-white hover:text-amber-200 transition-colors duration-200 flex items-center space-x-1"
+                className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
               >
                 <Calendar size="18px" />
-                <span>Memories</span>
-              </Link>
-
-              <Link
-                to="/during"
-                className="text-white hover:text-amber-200 transition-colors duration-200 flex items-center space-x-1"
-              >
-                <Video size="18px" />
                 <span>During Trip</span>
               </Link>
 
               <Link
+                to="/during"
+                className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
+              >
+                <Video size="18px" />
+                <span>Memories</span>
+              </Link>
+
+              {/* <Link
                 to="/add-blog"
-                className="text-white hover:text-amber-200 transition-colors duration-200 flex items-center space-x-1"
+                className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
               >
                 <BookOpen size="18px" />
                 <span>Add Blog</span>
-              </Link>
+              </Link> */}
             </div>
 
-            {/* Mobile menu button ((you can add mobile menu )later) */}
+            {/* Mobile menu button (later) */}
             <div className="md:hidden">
               <button className="text-white">
                 <svg

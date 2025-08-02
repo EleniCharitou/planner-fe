@@ -48,10 +48,10 @@ const App = () => {
         <Route path="/program" element={<Trip />} />
         <Route path="/memories" element={<Memories />} />
         <Route path="/during" element={<During />} />
-        <Route
+        {/* <Route
           path="/add-blog"
           element={<AddBlogPage createBlog={createBlog} />}
-        />
+        /> */}
         <Route path="/blogs/:slug" element={<DetailPage />} />
         <Route
           path="/blogs/edit/:slug"
