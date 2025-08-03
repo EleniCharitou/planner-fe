@@ -36,28 +36,28 @@ function NewMainLayout() {
               </Link>
 
               <Link
-                to="/memories"
-                className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
-              >
-                <Calendar size="18px" />
-                <span>During Trip</span>
-              </Link>
-
-              <Link
                 to="/during"
                 className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
               >
                 <Video size="18px" />
+                <span>During Trip</span>
+              </Link>
+
+              <Link
+                to="/memories"
+                className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
+              >
+                <Calendar size="18px" />
                 <span>Memories</span>
               </Link>
 
-              {/* <Link
-                to="/add-blog"
+              <Link
+                to="/articles"
                 className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
               >
                 <BookOpen size="18px" />
-                <span>Add Blog</span>
-              </Link> */}
+                <span>Articles</span>
+              </Link>
             </div>
 
             {/* Mobile menu button (later) */}
@@ -82,7 +82,6 @@ function NewMainLayout() {
         </div>
       </nav>
 
-      {/* Main content area */}
       <main>
         <Outlet />
       </main>

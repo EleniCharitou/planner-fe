@@ -284,7 +284,7 @@ const AllBlogsPage = () => {
                   <article
                     key={article.id}
                     className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl 
-                             transition-all duration-300 transform hover:-translate-y-1 group flex flex-col h-full"
+                             transition-all duration-300 transform group flex flex-col h-full"
                   >
                     {/* Article Image */}
                     <div className="h-48 bg-gradient-to-br from-teal-400 to-teal-600 relative overflow-hidden">
