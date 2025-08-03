@@ -1,6 +1,6 @@
 import { FaLocationArrow } from "react-icons/fa";
 import BlogContainer from "../components/homepage/BlogContainer";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 function Homepage() {
@@ -18,7 +18,7 @@ function Homepage() {
     <div className="min-h-screen bg-amber-50 p-6">
       <div className="max-w-6xl mx-auto">
         /{/* Main content */}
-        <div className="grid grid-cols-4 grid-rows-4 gap-4 min-w-screen/2">
+        <div className="grid grid-cols-4 grid-rows-2 gap-4 min-w-screen/2">
           {/* First rectangle: 2 columns, 2 rows */}
           <div className="col-span-3 row-span-1 bg-teal-500 rounded-lg shadow-lg flex p-6 ">
             <div className="text-white text-left">
@@ -96,6 +96,12 @@ function Homepage() {
               <div className="flex-1">
                 <BlogContainer />
               </div>
+              <Link
+                to="/articles"
+                className="flex items-center justify-center pt-2 hover:cursor-pointer hover:text-teal-800"
+              >
+                Explore more articles
+              </Link>
             </div>
           </div>
         </div>

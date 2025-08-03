@@ -7,8 +7,6 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout";
-import Home from "./pages/Home";
 import AddBlogPage from "./pages/AddBlogPage";
 import PageNotFound from "./pages/PageNotFound";
 import DetailPage from "./pages/DetailPage";
@@ -18,6 +16,7 @@ import { BlogDetails } from "./types";
 import { toast } from "react-toastify";
 import NewMainLayout from "./new_pages/NewMainLayout";
 import Homepage from "./new_pages/Homepage";
+import AllBlogsPage from "./pages/AllBlogsPage";
 
 const App = () => {
   const createBlog = (data: Omit<BlogDetails, "id" | "slug">) => {
@@ -48,10 +47,11 @@ const App = () => {
         <Route path="/program" element={<Trip />} />
         <Route path="/memories" element={<Memories />} />
         <Route path="/during" element={<During />} />
-        {/* <Route
+        <Route path="/articles" element={<AllBlogsPage />} />
+        <Route
           path="/add-blog"
           element={<AddBlogPage createBlog={createBlog} />}
-        /> */}
+        />
         <Route path="/blogs/:slug" element={<DetailPage />} />
         <Route
           path="/blogs/edit/:slug"
