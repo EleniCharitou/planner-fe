@@ -37,3 +37,12 @@ export interface BlogDetails {
     columnId: Id;
     content: string;
   };
+
+  export interface TripData {
+    destination: string;
+    members: { name: string }[];
+    startDate: string;
+    startTime: string;
+    endDate: string;
+    endTime: string;
+  }

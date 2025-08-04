@@ -1,10 +1,43 @@
-import Board from "../components/board-program/Board";
+import { useState } from "react";
+import TripModal from "../components/trip-planning/TripModal";
+import { TripData } from "../types";
 
 const Trip = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [tripInfo, setTripInfo] = useState<TripData>();
+
+  const handleFormSubmit = (tripData: TripData) => {
+    setTripInfo(tripData);
+    // const newColumns = generateColumns(
+    //   tripData.startDate,
+    //   tripData.startTime,
+    //   tripData.endDate,
+    //   tripData.endTime
+    // );
+    // setColumns(newColumns);
+    console.log("submit trip data", tripData);
+    setShowModal(false);
+  };
+
+  if (showModal) {
+    return (
+      <TripModal
+        onSubmit={handleFormSubmit}
+        onClose={() => setShowModal(false)}
+      />
+    );
+  }
+
   return (
-    <div>
-      Trip
-      <Board title={"title TBD"} />
+    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-amber-100 via-teal-300 to-teal-600">
+      <button
+        onClick={() => setShowModal(true)}
+        className="text-2xl font-semibold bg-teal-500 rounded-lg p-6
+                         hover:scale-150 ease-in-out duration-300 hover:cursor-pointer
+                          hover:shadow-amber-100/80 hover:shadow-lg hover:inset-shadow-sm hover:inset-shadow-teal-800/50"
+      >
+        Start planning your trip
+      </button>
     </div>
   );
 };
