@@ -40,9 +40,9 @@ export interface BlogDetails {
 
   export interface TripData {
     destination: string;
-    members: { name: string }[];
-    startDate: string;
-    startTime: string;
-    endDate: string;
-    endTime: string;
+    trip_members: { name: string, email:string }[];
+    start_date: string;
+    start_time: string;
+    end_date: string;
+    end_time: string;
   }

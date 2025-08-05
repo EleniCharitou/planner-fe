@@ -15,51 +15,106 @@ type Member = {
 const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
   const [tripData, setTripData] = useState<TripData>({
     destination: "",
-    members: [{ name: "" }],
-    startDate: "",
-    startTime: "09:00",
-    endDate: "",
-    endTime: "18:00",
+    trip_members: [{ name: "", email: "" }],
+    start_date: "",
+    start_time: "09:00",
+    end_date: "",
+    end_time: "18:00",
   });
+  const [fieldErrors, setFieldErrors] = useState<{
+    destination?: string;
+    start_date?: string;
+    end_date?: string;
+    trip_members?: { name?: string; email?: string }[];
+  }>({});
 
   const addMember = () => {
     setTripData({
       ...tripData,
-      members: [...tripData.members, { name: "" }],
+      trip_members: [...tripData.trip_members, { name: "", email: "" }],
     });
   };
 
   const removeMember = (index: number) => {
     setTripData({
       ...tripData,
-      members: tripData.members.filter((_, i) => i !== index),
+      trip_members: tripData.trip_members.filter((_, i) => i !== index),
     });
   };
 
   const updateMember = (index: number, field: keyof Member, value: string) => {
-    const newMembers = [...tripData.members];
+    const newMembers = [...tripData.trip_members];
     newMembers[index] = {
       ...newMembers[index],
       [field]: value,
     };
-    setTripData({ ...tripData, members: newMembers });
+    setTripData({ ...tripData, trip_members: newMembers });
+  };
+
+  const isEmailValid = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const handleSubmit = () => {
+    const errors: typeof fieldErrors = {};
+    const memberErrors: { name?: string; email?: string }[] = [];
+
+    let hasMemberError = false;
+
+    tripData.trip_members.forEach((member) => {
+      const memberError: { name?: string; email?: string } = {};
+
+      if (!member.name.trim()) {
+        memberError.name = "Name is required";
+        hasMemberError = true;
+      }
+
+      if (member.email && !isEmailValid(member.email)) {
+        memberError.email = "Invalid email format";
+        hasMemberError = true;
+      }
+
+      memberErrors.push(memberError);
+    });
+
+    // Only add to errors if needed
+    if (!tripData.destination.trim()) {
+      errors.destination = "Destination is required";
+    }
+    if (!tripData.start_date) {
+      errors.start_date = "Start date is required";
+    }
+    if (!tripData.end_date) {
+      errors.end_date = "End date is required";
+    }
+    if (hasMemberError) {
+      errors.trip_members = memberErrors;
+    }
+
+    const hasError = Object.keys(errors).length > 0;
+
+    if (hasError) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({}); // clear previous errors
+
     const tripInfo: TripData = {
       destination: tripData.destination,
-      members: tripData.members,
-      startDate: tripData.startDate,
-      startTime: tripData.startTime,
-      endDate: tripData.endDate,
-      endTime: tripData.endTime,
+      trip_members: tripData.trip_members,
+      start_date: tripData.start_date,
+      start_time: tripData.start_time,
+      end_date: tripData.end_date,
+      end_time: tripData.end_time,
     };
 
     onSubmit(tripInfo);
   };
 
   return (
-    <div className="flex items-center justify-center z-50 p-8">
+    <div className="flex items-center justify-center z-50 p-8 bg-gradient-to-br from-amber-100 via-teal-500 to-teal-600 h-screen">
       <div className="bg-amber-50 rounded-lg shadow-xl text-black p-6 w-full max-w-fit max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">
@@ -88,23 +143,42 @@ const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
               placeholder="Where are you going?"
             />
+            {fieldErrors.destination && (
+              <p className="text-red-500 text-sm">{fieldErrors.destination}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Trip Members
             </label>
-            {tripData.members.map((member, index) => (
+            {tripData.trip_members.map((member, index) => (
               <div key={index} className="flex gap-2 mb-2">
                 <input
                   type="text"
-                  required
                   value={member.name}
                   onChange={(e) => updateMember(index, "name", e.target.value)}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   placeholder="Name"
                 />
-                {tripData.members.length > 1 && (
+                {fieldErrors.trip_members?.[index]?.name && (
+                  <p className="text-red-500 text-sm">
+                    {fieldErrors.trip_members[index].name}
+                  </p>
+                )}
+                <input
+                  type="email"
+                  value={member.email}
+                  onChange={(e) => updateMember(index, "email", e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="Email"
+                />
+                {fieldErrors.trip_members?.[index]?.email && (
+                  <p className="text-red-500 text-sm">
+                    {fieldErrors.trip_members[index].email}
+                  </p>
+                )}
+                {tripData.trip_members.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeMember(index)}
@@ -133,12 +207,15 @@ const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
               <input
                 type="date"
                 required
-                value={tripData.startDate}
+                value={tripData.start_date}
                 onChange={(e) =>
-                  setTripData({ ...tripData, startDate: e.target.value })
+                  setTripData({ ...tripData, start_date: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
+              {fieldErrors.start_date && (
+                <p className="text-red-500 text-sm">{fieldErrors.start_date}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -146,9 +223,9 @@ const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
               </label>
               <input
                 type="time"
-                value={tripData.startTime}
+                value={tripData.start_time}
                 onChange={(e) =>
-                  setTripData({ ...tripData, startTime: e.target.value })
+                  setTripData({ ...tripData, start_time: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
@@ -163,12 +240,15 @@ const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
               <input
                 type="date"
                 required
-                value={tripData.endDate}
+                value={tripData.end_date}
                 onChange={(e) =>
-                  setTripData({ ...tripData, endDate: e.target.value })
+                  setTripData({ ...tripData, end_date: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
+              {fieldErrors.end_date && (
+                <p className="text-red-500 text-sm">{fieldErrors.end_date}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -176,9 +256,9 @@ const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
               </label>
               <input
                 type="time"
-                value={tripData.endTime}
+                value={tripData.end_time}
                 onChange={(e) =>
-                  setTripData({ ...tripData, endTime: e.target.value })
+                  setTripData({ ...tripData, end_time: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
               />

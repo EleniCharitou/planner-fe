@@ -6,17 +6,35 @@ const Trip = () => {
   const [showModal, setShowModal] = useState(false);
   const [tripInfo, setTripInfo] = useState<TripData>();
 
-  const handleFormSubmit = (tripData: TripData) => {
-    setTripInfo(tripData);
-    // const newColumns = generateColumns(
-    //   tripData.startDate,
-    //   tripData.startTime,
-    //   tripData.endDate,
-    //   tripData.endTime
-    // );
-    // setColumns(newColumns);
-    console.log("submit trip data", tripData);
-    setShowModal(false);
+  const handleFormSubmit = async (tripInfo: TripData) => {
+    try {
+      const response = await fetch("http://localhost:8000/api/trip/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          destination: tripInfo.destination,
+          trip_members: tripInfo.trip_members,
+          start_date: tripInfo.start_date,
+          start_time: tripInfo.start_time,
+          end_date: tripInfo.end_date,
+          end_time: tripInfo.end_time,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error("Failed to create trip");
+      }
+
+      const newTrip = await response.json();
+      setTripInfo(newTrip);
+    } catch (error) {
+      console.error("Error creating trip:", error);
+    } finally {
+      setShowModal(false);
+    }
   };
 
   if (showModal) {
