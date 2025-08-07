@@ -1,9 +1,10 @@
 import { useState } from "react";
-import DeleteIcon from "../icon/DeleteIcon";
 import { Task } from "../types";
 import { Id } from "react-toastify";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { MdEdit } from "react-icons/md";
+import { IoTrashSharp } from "react-icons/io5";
 
 interface Props {
   task: Task;
@@ -48,7 +49,7 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
         style={style}
         className="bg-zinc-900 p-2.5 h-[100px] min-h-[100px]
                    items-center flex text-left rounded-xl 
-                   border-2 border-rose-500 opacity-30
+                   border-2 border-teal-500 opacity-30
                    cursor-grab relative"
       />
     );
@@ -63,7 +64,7 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
         {...listeners}
         className="bg-zinc-900 p-2.5 h-[100px] min-h-[100px]
                    items-center flex text-left rounded-xl 
-                   hover:ring-1 hover:ring-inset hover:ring-rose-500 
+                   hover:ring-1 hover:ring-inset hover:ring-teal-500 
                    cursor-grab relative"
       >
         <textarea
@@ -90,7 +91,7 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
       {...listeners}
       className="task bg-zinc-900 p-2.5 h-[100px] min-h-[100px]
                    items-center flex text-left rounded-xl 
-                   hover:ring-1 hover:ring-inset hover:ring-rose-500 
+                   hover:ring-1 hover:ring-inset hover:ring-teal-500 
                    cursor-grab relative"
       onMouseEnter={() => {
         setMouseIsOver(true);
@@ -98,23 +99,28 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
       onMouseLeave={() => {
         setMouseIsOver(false);
       }}
-      onClick={toggleEditMode}
     >
-      <p className="task my-auto h-[90%] w-full overflow-auto overflow-x-hidden whitespace-pre-wrap">
-        {task.content}
-      </p>
-      {mouseIsOver && (
+      <div className="p-1 w-[90%]">
+        <p className="task my-auto h-[90%] w-full overflow-auto overflow-x-hidden whitespace-pre-wrap">
+          {task.content}
+        </p>
+      </div>
+      <div className="flex flex-col items-center space-y-2 absolute right-2 top-1/2 transform -translate-y-1/2">
         <button
-          className="stroke-white absolute right-4 top-1/2
-                    -translate-y-1/2  p-2 rounded
-                    opacity-60 hover:opacity-100"
+          className="hover:text-teal-500 hover:cursor-pointer"
+          onClick={() => setEditMode(true)}
+        >
+          <MdEdit />
+        </button>
+        <button
+          className="hover:text-teal-500 hover:cursor-pointer"
           onClick={() => {
             deleteTask(task.id);
           }}
         >
-          <DeleteIcon />
+          <IoTrashSharp />
         </button>
-      )}
+      </div>
     </div>
   );
 };

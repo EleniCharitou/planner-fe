@@ -54,11 +54,11 @@ const ColumnContainer = ({
   if (isDragging) {
     return (
       <div
-        className="bg-gray-800
+        className="bg-teal-800
         opacity-30
         border-2
-        border-rose-500
-                 w-[350px]
+        border-teal-500
+                 w-[300px]
                  h-[500px]
                  max-h-[500px]
                  rounded-md
@@ -76,7 +76,7 @@ const ColumnContainer = ({
       {...attributes}
       {...listeners}
       className="bg-gray-800
-                 w-[350px]
+                 w-[300px]
                  h-[500px]
                  max-h-[500px]
                  rounded-md
@@ -119,7 +119,9 @@ const ColumnContainer = ({
           )}
           {editMode && (
             <input
-              className="focus:border-rose-500 border rounded outline-none px-2 "
+              type="text"
+              maxLength={20}
+              className="w-[200px] border border-gray-300 rounded px-2 py-1 outline-none focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
               value={column.title}
               onChange={(e) => updateColumn(column.id, e.target.value)}
               autoFocus
@@ -161,7 +163,7 @@ const ColumnContainer = ({
         onClick={() => createTask(column.id)}
       >
         <PlusIcon />
-        Add task
+        Add adventure
       </button>
     </div>
   );

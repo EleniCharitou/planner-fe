@@ -14,31 +14,35 @@ export interface BlogDetails {
   }
 
   export interface AttractionsDetails {
-    id: string;
+    id?: string;
     column_id: string;
     title: string;
     location: string;
-    category: string;
-    mapUrl: string| null;
-    ticket: string;
+    category: 'museum' | 'landmark' | 'park' | 'palace' | 'restaurant' | 'gallery' | 'church' | 'other';
+    mapUrl?: string| null;
+    ticket?: string;
     date: string;
     cost: number;
     visited: boolean;
   }
-// new types
+
   export type Id = string | number;
   export interface Column {
     id: Id;
     title: string;
+    position?: number;
+    trip_id?: number;
   }
 
   export interface Task {
     id: Id,
     columnId: Id;
     content: string;
+    attractionData ?: AttractionsDetails[];
   };
 
   export interface TripData {
+    id?: number;
     destination: string;
     trip_members: { name: string, email:string }[];
     start_date: string;

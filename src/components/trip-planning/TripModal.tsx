@@ -154,30 +154,38 @@ const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
             </label>
             {tripData.trip_members.map((member, index) => (
               <div key={index} className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={member.name}
-                  onChange={(e) => updateMember(index, "name", e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="Name"
-                />
-                {fieldErrors.trip_members?.[index]?.name && (
-                  <p className="text-red-500 text-sm">
-                    {fieldErrors.trip_members[index].name}
-                  </p>
-                )}
-                <input
-                  type="email"
-                  value={member.email}
-                  onChange={(e) => updateMember(index, "email", e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="Email"
-                />
-                {fieldErrors.trip_members?.[index]?.email && (
-                  <p className="text-red-500 text-sm">
-                    {fieldErrors.trip_members[index].email}
-                  </p>
-                )}
+                <div>
+                  <input
+                    type="text"
+                    value={member.name}
+                    onChange={(e) =>
+                      updateMember(index, "name", e.target.value)
+                    }
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Name"
+                  />
+                  {fieldErrors.trip_members?.[index]?.name && (
+                    <p className="text-red-500 text-sm">
+                      {fieldErrors.trip_members[index].name}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <input
+                    type="email"
+                    value={member.email}
+                    onChange={(e) =>
+                      updateMember(index, "email", e.target.value)
+                    }
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Email"
+                  />
+                  {fieldErrors.trip_members?.[index]?.email && (
+                    <p className="text-red-500 text-sm">
+                      {fieldErrors.trip_members[index].email}
+                    </p>
+                  )}
+                </div>
                 {tripData.trip_members.length > 1 && (
                   <button
                     type="button"
@@ -269,13 +277,13 @@ const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-teal-200 transition-colors hover:cursor-pointer"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
-              className="flex-1 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
+              className="flex-1 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors hover:cursor-pointer"
             >
               Next
             </button>
