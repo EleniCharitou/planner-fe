@@ -15,9 +15,9 @@ function Homepage() {
   };
 
   return (
-    <div className="min-h-screen bg-amber-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        /{/* Main content */}
+    <div className="min-h-screen bg-gradient-to-br from-amber-100 via-teal-300 to-teal-600 p-6">
+      <div className="max-w-6xl mx-auto shadow-2xl shadow-teal-100">
+        {/* Main content */}
         <div className="grid grid-cols-4 grid-rows-2 gap-4 min-w-screen/2">
           {/* First rectangle: 2 columns, 2 rows */}
           <div className="col-span-3 row-span-1 bg-teal-500 rounded-lg shadow-lg flex p-6 ">

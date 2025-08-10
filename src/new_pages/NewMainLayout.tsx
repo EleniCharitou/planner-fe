@@ -39,7 +39,7 @@ function NewMainLayout() {
                 to="/during"
                 className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
               >
-                <Video size="18px" />
+                <Calendar size="18px" />
                 <span>During Trip</span>
               </Link>
 
@@ -47,7 +47,7 @@ function NewMainLayout() {
                 to="/memories"
                 className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
               >
-                <Calendar size="18px" />
+                <Video size="18px" />
                 <span>Memories</span>
               </Link>
 

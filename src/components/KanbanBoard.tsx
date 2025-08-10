@@ -72,7 +72,7 @@ const KanbanBoard = () => {
                 allTasks.push({
                   id: attraction.id,
                   columnId: attraction.column_id,
-                  content: `${attraction.title} - ${attraction.location} (${attraction.category}) - $${attraction.cost}`,
+                  content: `${attraction.title} - ${attraction.location} (${attraction.category}) - ${attraction.cost}€`,
                   attractionData: attraction,
                 });
               });
@@ -377,7 +377,7 @@ const KanbanBoard = () => {
         const newTask: Task = {
           id: newAttraction.id,
           columnId: selectedColumnId,
-          content: `${attractionData.title} - ${attractionData.location} (${attractionData.category}) - $${attractionData.cost}`,
+          content: `${attractionData.title} - ${attractionData.location} (${attractionData.category}) - ${attractionData.cost}€`,
           attractionData: newAttraction,
         };
         setTasks([...tasks, newTask]);
@@ -513,21 +513,20 @@ const KanbanBoard = () => {
                 ))}
               </SortableContext>
             </div>
-
-            <button
-              className="h-[60px] min-w-fit cursor-pointer hover:shadow-teal-500/25 flex items-center justify-center
+          </div>
+          <button
+            className="h-[60px] min-w-fit cursor-pointer hover:shadow-teal-500/25 flex items-center justify-center
                         px-2 py-3 bg-gradient-to-r from-teal-400 to-teal-500 text-white rounded-xl 
                         hover:from-teal-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg 
                         font-semibold border border-teal-400 hover:border-teal-500 hover:cursor-pointer"
-              onClick={() => {
-                createNewColumn();
-              }}
-            >
-              <PlusIcon />
-              <span>Add Column</span>
-              <span>✨</span>
-            </button>
-          </div>
+            onClick={() => {
+              createNewColumn();
+            }}
+          >
+            <PlusIcon />
+            <span>Add Column</span>
+            <span>✨</span>
+          </button>
 
           {createPortal(
             <DragOverlay>

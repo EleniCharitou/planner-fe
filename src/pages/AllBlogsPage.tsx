@@ -170,7 +170,8 @@ const AllBlogsPage = () => {
                     setSortBy(e.target.value as "newest" | "oldest" | "title")
                   }
                   className="p-2 border border-gray-300 text-black rounded-lg 
-                             focus:ring-1 focus:ring-teal-500 focus:border-transparent"
+                             focus:ring-1 focus:ring-teal-500 focus:border-transparent
+                             hover:cursor-pointer"
                 >
                   <option value="newest">Newest First</option>
                   <option value="oldest">Oldest First</option>
@@ -182,7 +183,8 @@ const AllBlogsPage = () => {
               <select
                 value={selectedAuthor}
                 onChange={(e) => setSelectedAuthor(e.target.value)}
-                className="px-3 py-2 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="px-3 py-2 border border-gray-300 text-black rounded-lg 
+                           focus:ring-2 focus:ring-teal-500 focus:border-transparent hover:cursor-pointer"
               >
                 {uniqueAuthors.map((author) => (
                   <option key={author} value={author}>
