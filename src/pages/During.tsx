@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 import { TripData } from "../types";
 import axios from "axios";
+import KanbanBoard from "../components/KanbanBoard";
+import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 
 const During = () => {
+  const TRIPS_PER_PAGE = 8;
+
   const [trips, setTrips] = useState<TripData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(TRIPS_PER_PAGE);
+  const [selectedTrip, setSelectedTrip] = useState<TripData | null>(null);
+
+  const visibleTrips = trips.slice(0, visibleCount);
+  const hasMoreTrips = trips.length > visibleCount;
 
   useEffect(() => {
     fetchTrips();
@@ -24,6 +33,15 @@ const During = () => {
 
   const handleTripDetails = (trip: TripData) => {
     console.log("Trip: ", trip.destination);
+    setSelectedTrip(trip);
+  };
+
+  const handleShowMore = () => {
+    setVisibleCount((prev) => Math.min(prev + TRIPS_PER_PAGE, trips.length));
+    console.log(visibleCount);
+  };
+  const handleShowLess = () => {
+    setVisibleCount(TRIPS_PER_PAGE);
   };
 
   if (loading) {
@@ -41,15 +59,15 @@ const During = () => {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-teal-300 to-teal-600 p-6">
       <div
         className="justify-center items-center text-teal-700 font-bold text-3xl bg-amber-50
-                   rounded-2xl w-[95%] h-fit mx-auto p-4 border-1 border-teal-400 "
+                   rounded-2xl w-[95%] mx-auto p-3 border-1 border-teal-400 "
       >
         <p className="p-3">Trips:</p>
         <div className="grid grid-cols-4 gap-4 mb-6">
-          {trips.map((trip: TripData) => (
+          {visibleTrips.map((trip: TripData) => (
             <button
               key={trip.id}
               onClick={() => handleTripDetails(trip)}
-              className="group relative text-xl font-semibold bg-amber-50 text-teal-600 rounded-full p-4 mx-3
+              className="group relative text-lg font-semibold bg-amber-50 text-teal-600 rounded-full p-4 mx-3
                          border-1 border-teal-400  min-h-[60px] flex items-center justify-center text-center
                          hover:bg-teal-500 hover:text-white hover:cursor-pointer transition-all duration-300 transform"
             >
@@ -57,7 +75,39 @@ const During = () => {
             </button>
           ))}
         </div>
+        <div className="flex justify-end gap-3">
+          {hasMoreTrips && (
+            <button
+              onClick={handleShowMore}
+              className="flex items-center justify-end font-medium bg-teal-800 text-sm text-amber-50 rounded-full p-2 
+                         hover:cursor-pointer hover:shadow-xl hover:shadow-teal-300"
+            >
+              Show More
+              <IoMdArrowDropdown />
+            </button>
+          )}
+          {visibleCount > TRIPS_PER_PAGE && (
+            <button
+              className="flex items-center justify-end font-medium text-sm bg-teal-800 text-amber-50 rounded-full p-2 
+                         hover:cursor-pointer hover:shadow-xl hover:shadow-teal-300"
+              onClick={handleShowLess}
+            >
+              Show less
+              <IoMdArrowDropup />
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Kanban Board - only show when trip is selected */}
+      {selectedTrip && (
+        <div className="bg-amber-50/50 rounded-2xl w-[95%] mx-auto p-6 mt-8 border border-teal-400">
+          <h2 className="text-2xl font-bold text-teal-700 mb-4">
+            Your plan: {selectedTrip.destination}
+          </h2>
+          <KanbanBoard />
+        </div>
+      )}
     </div>
   );
 };
