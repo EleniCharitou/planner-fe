@@ -15,8 +15,8 @@ function Homepage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-100 via-teal-300 to-teal-600 p-6">
-      <div className="max-w-6xl mx-auto shadow-2xl shadow-teal-100">
+    <div className="min-h-screen bg-gradient-to-br from-amber-100 via-teal-300 to-teal-400 p-6">
+      <div className="max-w-6xl mx-auto">
         {/* Main content */}
         <div className="grid grid-cols-4 grid-rows-2 gap-4 min-w-screen/2">
           {/* First rectangle: 2 columns, 2 rows */}
