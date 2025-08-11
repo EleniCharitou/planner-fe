@@ -3,6 +3,7 @@ import BlogCard from "./BlogCard";
 import axios from "axios";
 import { BlogDetails } from "../../types";
 import Spinner from "../Spinner";
+import backendUrl from "../../config";
 
 const BlogContainer = () => {
   const [blogs, setBlogs] = useState<BlogDetails[]>([]);
@@ -10,7 +11,7 @@ const BlogContainer = () => {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/posts/recent")
+      .get(`${backendUrl}/posts/recent`)
       .then((res) => {
         setBlogs(res.data);
         setLoading(false);

@@ -17,13 +17,14 @@ import { toast } from "react-toastify";
 import NewMainLayout from "./new_pages/NewMainLayout";
 import Homepage from "./new_pages/Homepage";
 import AllBlogsPage from "./pages/AllBlogsPage";
+import backendUrl from "./config";
 
 const App = () => {
   const createBlog = (data: Omit<BlogDetails, "id" | "slug">) => {
     axios
-      .post("http://127.0.0.1:8000/api/posts/", data)
+      .post(`${backendUrl}/posts/`, data)
       .then((res) => {
-        toast.success("Blog added successfully!");
+        toast.success("Blog added successfully!", res);
       })
       .catch((err) => console.log(err.message));
   };
@@ -33,7 +34,7 @@ const App = () => {
     slug: string | undefined
   ) => {
     axios
-      .put(`http://127.0.0.1:8000/api/posts/${slug}/`, data)
+      .put(`${backendUrl}posts/${slug}/`, data)
       .then(() => {
         toast.success("Blog updated successfully!");
       })

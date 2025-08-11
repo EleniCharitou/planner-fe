@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { BlogDetails } from "../types";
+import backendUrl from "../config";
 
 interface EditBlogPageProps {
   editBlog: (
@@ -19,7 +20,7 @@ const EditBlogPage: React.FC<EditBlogPageProps> = ({ editBlog }) => {
 
   useEffect(() => {
     axios
-      .get(`http://127.0.0.1:8000/api/posts/${slug}`)
+      .get(`${backendUrl}/posts/${slug}`)
       .then((res) => {
         setBlog(res.data);
         setTitle(res.data.title);
@@ -33,6 +34,7 @@ const EditBlogPage: React.FC<EditBlogPageProps> = ({ editBlog }) => {
     title: title,
     content: content,
     author: author,
+    picture: blog?.picture,
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

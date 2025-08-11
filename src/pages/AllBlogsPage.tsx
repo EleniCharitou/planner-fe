@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import Spinner from "../components/Spinner";
+import backendUrl from "../config";
 
 interface BlogDetails {
   id: number;
@@ -46,7 +47,7 @@ const AllBlogsPage = () => {
 
   const fetchArticles = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/posts/");
+      const response = await axios.get(`${backendUrl}/posts/`);
       setArticles(response.data);
       setLoading(false);
     } catch (error) {

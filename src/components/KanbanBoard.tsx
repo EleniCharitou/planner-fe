@@ -16,6 +16,7 @@ import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "./TaskCard";
 import AttractionModal from "./AttractionModal";
+import backendUrl from "../config";
 
 interface PendingChange {
   type: "move" | "create" | "update" | "delete";
@@ -57,14 +58,14 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
 
       try {
         const columnsResponse = await fetch(
-          `http://localhost:8000/api/column/?trip_id=${tripId}`
+          `${backendUrl}/column/?trip_id=${tripId}`
         );
         if (columnsResponse.ok) {
           const columnsData = await columnsResponse.json();
           setColumns(columnsData);
 
           const attractionsResponse = await fetch(
-            `http://localhost:8000/api/grouped_attractions/?trip_id=${tripId}`
+            `${backendUrl}/grouped_attractions/?trip_id=${tripId}`
           );
           if (attractionsResponse.ok) {
             const attractionsData = await attractionsResponse.json();
@@ -106,18 +107,15 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
       for (const change of pendingChanges) {
         switch (change.type) {
           case "move":
-            await fetch(
-              `http://localhost:8000/api/attraction/${change.taskId}/`,
-              {
-                method: "PATCH",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  column_id: change.data.newColumnId,
-                }),
-              }
-            );
+            await fetch(`${backendUrl}/attraction/${change.taskId}/`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                column_id: change.data.newColumnId,
+              }),
+            });
             break;
 
           case "create":
@@ -125,25 +123,19 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
             break;
 
           case "update":
-            await fetch(
-              `http://localhost:8000/api/attraction/${change.taskId}/`,
-              {
-                method: "PATCH",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(change.data),
-              }
-            );
+            await fetch(`${backendUrl}/attraction/${change.taskId}/`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(change.data),
+            });
             break;
 
           case "delete":
-            await fetch(
-              `http://localhost:8000/api/attraction/${change.taskId}/`,
-              {
-                method: "DELETE",
-              }
-            );
+            await fetch(`${backendUrl}/attraction/${change.taskId}/`, {
+              method: "DELETE",
+            });
             break;
         }
       }
@@ -166,7 +158,7 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
     if (!tripId) return;
 
     try {
-      const response = await fetch("http://localhost:8000/api/column/", {
+      const response = await fetch(`${backendUrl}/column/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -199,7 +191,7 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/column/${id}/`, {
+      const response = await fetch(`${backendUrl}/column/${id}/`, {
         method: "DELETE",
       });
 
@@ -226,7 +218,7 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/column/${id}/`, {
+      const response = await fetch(`${backendUrl}/column/${id}/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -358,7 +350,7 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
     const tripInfo = JSON.parse(localStorage.getItem("tripInfo") || "{}");
 
     try {
-      const response = await fetch("http://localhost:8000/api/attraction/", {
+      const response = await fetch(`${backendUrl}/attraction/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

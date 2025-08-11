@@ -2,6 +2,7 @@ import { useState } from "react";
 import TripModal from "../components/trip-planning/TripModal";
 import { TripData } from "../types";
 import KanbanBoard from "../components/KanbanBoard";
+import backendUrl from "../config";
 
 const Trip = () => {
   const [showModal, setShowModal] = useState(false);
@@ -25,7 +26,7 @@ const Trip = () => {
       const columns = [];
 
       // Create backlog column
-      const backlogResponse = await fetch("http://localhost:8000/api/column/", {
+      const backlogResponse = await fetch(`${backendUrl}/column/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,7 +55,7 @@ const Trip = () => {
           day: "numeric",
         });
 
-        const dayResponse = await fetch("http://localhost:8000/api/column/", {
+        const dayResponse = await fetch(`${backendUrl}/column/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -81,7 +82,7 @@ const Trip = () => {
 
   const handleFormSubmit = async (tripInfo: TripData) => {
     try {
-      const response = await fetch("http://localhost:8000/api/trip/", {
+      const response = await fetch(`${backendUrl}/trip/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

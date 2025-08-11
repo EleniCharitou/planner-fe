@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Column from "./Column";
 import { ColumnData } from "../../types.ts";
 import axios from "axios";
+import backendUrl from "../../config.ts";
 
 interface BoardProps {
   title: string;
@@ -12,7 +13,7 @@ const Board: React.FC<BoardProps> = ({ title }) => {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/grouped_attractions/")
+      .get(`${backendUrl}/grouped_attractions/`)
       .then((res) => {
         const data = res.data;
         setAttractions(data);

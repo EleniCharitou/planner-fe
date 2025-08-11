@@ -4,6 +4,7 @@ import axios from "axios";
 import { BlogDetails } from "../types";
 import Spinner from "../components/Spinner";
 import { ArrowLeft, BookOpen, Clock, Share2, User } from "lucide-react";
+import backendUrl from "../config";
 // import Modal from '../components/Modal'
 
 const DetailPage = () => {
@@ -20,7 +21,7 @@ const DetailPage = () => {
     }
 
     axios
-      .get(`http://127.0.0.1:8000/api/posts/${slug}/`)
+      .get(`${backendUrl}/posts/${slug}/`)
       .then((res) => {
         setArticle(res.data);
         setLoading(false);

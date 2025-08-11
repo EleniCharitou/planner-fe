@@ -3,6 +3,7 @@ import { TripData } from "../types";
 import axios from "axios";
 import KanbanBoard from "../components/KanbanBoard";
 import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
+import backendUrl from "../config";
 
 const During = () => {
   const TRIPS_PER_PAGE = 8;
@@ -21,7 +22,7 @@ const During = () => {
 
   const fetchTrips = async () => {
     try {
-      const tripsResponse = await axios.get("http://127.0.0.1:8000/api/trip/");
+      const tripsResponse = await axios.get(`${backendUrl}/trip/`);
       console.log("trip: ", tripsResponse.data);
       setTrips(tripsResponse.data);
       setLoading(false);
