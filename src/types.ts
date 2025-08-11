@@ -42,7 +42,7 @@ export interface BlogDetails {
   };
 
   export interface TripData {
-    id?: number;
+    id: number;
     destination: string;
     trip_members: { name: string, email:string }[];
     start_date: string;

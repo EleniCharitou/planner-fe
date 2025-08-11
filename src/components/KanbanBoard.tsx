@@ -23,7 +23,11 @@ interface PendingChange {
   data: any;
 }
 
-const KanbanBoard = () => {
+interface KanbanBoardProps {
+  tripId: number;
+}
+
+const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
   const [columns, setColumns] = useState<Column[]>([]);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -46,7 +50,6 @@ const KanbanBoard = () => {
 
   useEffect(() => {
     const loadBoardData = async () => {
-      const tripId = localStorage.getItem("currentTripId");
       if (!tripId) {
         setIsLoading(false);
         return;
@@ -88,7 +91,7 @@ const KanbanBoard = () => {
     };
 
     loadBoardData();
-  }, []);
+  }, [tripId]);
 
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
@@ -160,7 +163,6 @@ const KanbanBoard = () => {
   };
 
   const createNewColumn = async () => {
-    const tripId = localStorage.getItem("currentTripId");
     if (!tripId) return;
 
     try {
@@ -170,7 +172,7 @@ const KanbanBoard = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          trip_id: parseInt(tripId),
+          trip_id: tripId,
           title: `New Day`,
           position: columns.length,
         }),
@@ -183,10 +185,6 @@ const KanbanBoard = () => {
     } catch (error) {
       console.error("Error creating column:", error);
     }
-  };
-
-  const generateId = () => {
-    return Math.floor(Math.random() * 100001);
   };
 
   const deleteColumn = async (id: Id) => {
@@ -513,20 +511,20 @@ const KanbanBoard = () => {
                 ))}
               </SortableContext>
             </div>
-          </div>
-          <button
-            className="h-[60px] min-w-fit cursor-pointer hover:shadow-teal-500/25 flex items-center justify-center
+            <button
+              className="h-[60px] min-w-fit cursor-pointer hover:shadow-teal-500/25 flex items-center justify-center
                         px-2 py-3 bg-gradient-to-r from-teal-400 to-teal-500 text-white rounded-xl 
                         hover:from-teal-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg 
                         font-semibold border border-teal-400 hover:border-teal-500 hover:cursor-pointer"
-            onClick={() => {
-              createNewColumn();
-            }}
-          >
-            <PlusIcon />
-            <span>Add Column</span>
-            <span>✨</span>
-          </button>
+              onClick={() => {
+                createNewColumn();
+              }}
+            >
+              <PlusIcon />
+              <span>Add Column</span>
+              <span>✨</span>
+            </button>
+          </div>
 
           {createPortal(
             <DragOverlay>
@@ -565,4 +563,5 @@ const KanbanBoard = () => {
     </div>
   );
 };
+
 export default KanbanBoard;

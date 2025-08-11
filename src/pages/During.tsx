@@ -103,9 +103,13 @@ const During = () => {
       {selectedTrip && (
         <div className="bg-amber-50/50 rounded-2xl w-[95%] mx-auto p-6 mt-8 border border-teal-400">
           <h2 className="text-2xl font-bold text-teal-700 mb-4">
-            Your plan: {selectedTrip.destination}
+            Your plan for{" "}
+            <span className="italic font-medium">
+              {selectedTrip.destination}
+            </span>
+            <span>✨</span>
           </h2>
-          <KanbanBoard />
+          <KanbanBoard tripId={selectedTrip.id} />
         </div>
       )}
     </div>

@@ -224,7 +224,7 @@ const Trip = () => {
                   Trip Board
                 </h2>
               </div>
-              <KanbanBoard />
+              <KanbanBoard tripId={tripInfo.id} />
             </div>
           </div>
         </div>

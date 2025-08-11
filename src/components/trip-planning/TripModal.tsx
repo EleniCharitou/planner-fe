@@ -14,6 +14,7 @@ type Member = {
 
 const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
   const [tripData, setTripData] = useState<TripData>({
+    id: 0,
     destination: "",
     trip_members: [{ name: "", email: "" }],
     start_date: "",
@@ -102,6 +103,7 @@ const TripModal: React.FC<TripModalProps> = ({ onSubmit, onClose }) => {
     setFieldErrors({}); // clear previous errors
 
     const tripInfo: TripData = {
+      id: tripData.id,
       destination: tripData.destination,
       trip_members: tripData.trip_members,
       start_date: tripData.start_date,
