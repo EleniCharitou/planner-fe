@@ -1,6 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import { MdCardTravel, MdOutlineModeOfTravel } from "react-icons/md";
 import { BookOpen, Calendar, Video } from "lucide-react";
+import Footer from "../components/Footer";
 
 function NewMainLayout() {
   return (
@@ -58,6 +59,12 @@ function NewMainLayout() {
                 <BookOpen size="18px" />
                 <span>Articles</span>
               </Link>
+              <Link
+                to="/login"
+                className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
+              >
+                <span>Login|SignUp</span>
+              </Link>
             </div>
 
             {/* Mobile menu button (later) */}
@@ -85,6 +92,7 @@ function NewMainLayout() {
       <main>
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }

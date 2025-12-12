@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Task } from "../types";
+import { AttractionsDetails, Task } from "../types";
 import { Id } from "react-toastify";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -9,7 +9,7 @@ import { IoTrashSharp } from "react-icons/io5";
 interface Props {
   task: Task;
   deleteTask: (id: Id) => void;
-  updateTask: (id: Id, content: string) => void;
+  updateTask: (id: Id, updatedTask: Task) => void;
 }
 
 const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
@@ -42,6 +42,21 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
     setMouseIsOver(false);
   };
 
+  const categories = [
+    { value: "museum", label: "🏛️ Museum" },
+    { value: "landmark", label: "🗽 Landmark" },
+    { value: "park", label: "🌳 Park" },
+    { value: "palace", label: "🏰 Palace" },
+    { value: "restaurant", label: "🍽️ Restaurant" },
+    { value: "gallery", label: "🎨 Gallery" },
+    { value: "church", label: "⛪ Church" },
+    { value: "other", label: "📍 Other" },
+  ];
+
+  const categoryIcon =
+    categories.find((c) => c.value === task.attractionData.category)?.label ||
+    "📍";
+
   if (isDragging) {
     return (
       <div
@@ -62,23 +77,113 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
         style={style}
         {...attributes}
         {...listeners}
-        className="bg-zinc-900 p-2.5 h-[100px] min-h-[100px]
-                   items-center flex text-left rounded-xl 
-                   hover:ring-1 hover:ring-inset hover:ring-teal-500 
-                   cursor-grab relative"
+        className="bg-zinc-900 p-3 rounded-xl space-y-3 cursor-default"
       >
-        <textarea
-          className="h-[90%] w-full resize-none border-none 
-                             rounded bg-transparent text-white focus:outline-none"
-          value={task.content}
-          autoFocus
-          placeholder="Task content here"
-          onBlur={toggleEditMode}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && e.shiftKey) toggleEditMode();
-          }}
-          onChange={(e) => updateTask(task.id, e.target.value)}
-        ></textarea>
+        {/* Location */}
+        <input
+          type="text"
+          className="w-full p-1 rounded bg-zinc-800 text-white border border-zinc-700"
+          value={task.attractionData.location}
+          placeholder="Location"
+          onChange={(e) =>
+            updateTask(task.id, {
+              ...task,
+              attractionData: {
+                ...task.attractionData,
+                location: e.target.value,
+              },
+            })
+          }
+        />
+
+        {/* Category */}
+        <select
+          className="w-full p-1 rounded bg-zinc-800 text-white border border-zinc-700"
+          value={task.attractionData.category}
+          onChange={(e) =>
+            updateTask(task.id, {
+              ...task,
+              attractionData: {
+                ...task.attractionData,
+                category: e.target.value as AttractionsDetails["category"],
+              },
+            })
+          }
+        >
+          {categories.map((c) => (
+            <option key={c.value} value={c.value}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+
+        {/* Cost */}
+        <input
+          type="number"
+          step="0.1"
+          className="w-full p-1 rounded bg-zinc-800 text-white border border-zinc-700"
+          value={task.attractionData.cost}
+          placeholder="Cost"
+          onChange={(e) =>
+            updateTask(task.id, {
+              ...task,
+              attractionData: {
+                ...task.attractionData,
+                cost: Number(e.target.value),
+              },
+            })
+          }
+        />
+
+        {/* Map URL */}
+        <input
+          type="text"
+          className="w-full p-1 rounded bg-zinc-800 text-white border border-zinc-700"
+          value={task.attractionData.mapUrl || ""}
+          placeholder="Map URL"
+          onChange={(e) =>
+            updateTask(task.id, {
+              ...task,
+              attractionData: {
+                ...task.attractionData,
+                mapUrl: e.target.value,
+              },
+            })
+          }
+        />
+
+        {/* Ticket URL */}
+        <input
+          type="text"
+          className="w-full p-1 rounded bg-zinc-800 text-white border border-zinc-700"
+          value={task.attractionData.ticket || ""}
+          placeholder="Ticket URL"
+          onChange={(e) =>
+            updateTask(task.id, {
+              ...task,
+              attractionData: {
+                ...task.attractionData,
+                ticket: e.target.value,
+              },
+            })
+          }
+        />
+
+        {/* Save Button */}
+        <div className="flex justify-end space-x-2">
+          <button
+            className="px-3 py-1 bg-teal-500 rounded hover:bg-teal-600"
+            onClick={toggleEditMode}
+          >
+            Save
+          </button>
+          <button
+            className="px-3 py-1 bg-zinc-700 rounded hover:bg-zinc-600"
+            onClick={() => setEditMode(false)}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     );
   }
@@ -100,11 +205,51 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
         setMouseIsOver(false);
       }}
     >
-      <div className="p-1 w-[90%]">
-        <p className="task my-auto h-[90%] w-full overflow-auto overflow-x-hidden whitespace-pre-wrap">
-          {task.content}
-        </p>
+      <div>
+        {/* Row 1: Location */}
+        <div className="mb-2">📍 {task.attractionData.location}</div>
+        {/* Row 2: Two-column layout */}
+        <div className="grid grid-cols-1 gap-4">
+          {/* Left column: Category + Cost */}
+          <div className="flex items-center  gap-4">
+            <span className="fit-content" title="Cost">
+              💰 {task.attractionData.cost}
+            </span>
+            <span
+              className="cursor-pointer"
+              title={
+                categories.find((c) => c.value === task.attractionData.category)
+                  ?.label || ""
+              }
+            >
+              {categoryIcon.split(" ")[0]}
+            </span>
+            {task.attractionData.mapUrl && (
+              <a
+                href={task.attractionData.mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View on Map"
+                className="hover:scale-130"
+              >
+                🗺️
+              </a>
+            )}
+            {task.attractionData.ticket && (
+              <a
+                href={task.attractionData.ticket}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Buy Ticket"
+                className="hover:scale-130"
+              >
+                🎫
+              </a>
+            )}
+          </div>
+        </div>
       </div>
+
       <div className="flex flex-col items-center space-y-2 absolute right-2 top-1/2 transform -translate-y-1/2">
         <button
           className="hover:text-teal-500 hover:cursor-pointer"

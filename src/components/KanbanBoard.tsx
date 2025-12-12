@@ -395,29 +395,32 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
     }
   };
 
-  const updateTask = (id: Id, content: string) => {
+  const updateTask = (id: Id, updatedTask: Task) => {
     const task = tasks.find((t) => t.id === id);
-    if (task && task.attractionData) {
-      const title = content.split(" - ")[0] || content;
+    if (!task) return;
 
-      setPendingChanges((prev) => [
-        ...prev.filter(
-          (change) => change.taskId !== id || change.type !== "update"
-        ),
-        {
-          type: "update",
-          taskId: id,
-          data: { title },
-        },
-      ]);
-      setHasUnsavedChanges(true);
+    const title =
+      updatedTask.attractionData?.title ||
+      updatedTask.content.split(" - ")[0] ||
+      updatedTask.content;
 
-      const newTasks = tasks.map((task) => {
-        if (task.id !== id) return task;
-        return { ...task, content };
-      });
-      setTasks(newTasks);
-    }
+    // Update pendingChanges list
+    setPendingChanges((prev) => [
+      ...prev.filter(
+        (change) => change.taskId !== id || change.type !== "update"
+      ),
+      {
+        type: "update",
+        taskId: id,
+        data: { title },
+      },
+    ]);
+
+    setHasUnsavedChanges(true);
+
+    // Replace the task in the list
+    const newTasks = tasks.map((t) => (t.id === id ? updatedTask : t));
+    setTasks(newTasks);
   };
 
   if (isLoading) {

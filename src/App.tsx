@@ -11,6 +11,7 @@ import AddBlogPage from "./pages/AddBlogPage";
 import PageNotFound from "./pages/PageNotFound";
 import DetailPage from "./pages/DetailPage";
 import EditBlogPage from "./pages/EditeBlogPage";
+import LoginPage from "./new_pages/LoginPage";
 import axios from "axios";
 import { BlogDetails } from "./types";
 import { toast } from "react-toastify";
@@ -58,7 +59,11 @@ const App = () => {
           path="/blogs/edit/:slug"
           element={<EditBlogPage editBlog={editBlog} />}
         />
-
+        <Route path="/login" element={<LoginPage initialView="login" />} />
+        <Route
+          path="/register"
+          element={<LoginPage initialView="register" />}
+        />
         <Route path="*" element={<PageNotFound />} />
       </Route>
     )
