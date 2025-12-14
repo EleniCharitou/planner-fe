@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import PlusIcon from "../icon/PlusIcon";
-import { Column, Id, Task } from "../types";
+import { AttractionsDetails, Column, Id, Task } from "../types";
 import ColumnContainer from "./ColumnContainer";
 import {
   DndContext,
@@ -103,44 +103,98 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
     setIsSaving(true);
 
     try {
+      const errors: string[] = [];
+
       // Process all pending changes
       for (const change of pendingChanges) {
-        switch (change.type) {
-          case "move":
-            await fetch(`${backendUrl}/attraction/${change.taskId}/`, {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                column_id: change.data.newColumnId,
-              }),
-            });
-            break;
+        try {
+          switch (change.type) {
+            case "move":
+              const moveResponse = await fetch(
+                `${backendUrl}/attraction/${change.taskId}/`,
+                {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    column_id: change.data.newColumnId,
+                  }),
+                }
+              );
+              if (!moveResponse.ok) {
+                const errorData = await moveResponse.json().catch(() => ({}));
+                errors.push(
+                  `Failed to move task: ${
+                    errorData.detail || moveResponse.statusText
+                  }`
+                );
+              }
+              break;
 
-          case "create":
-            // Already handled in real-time, but could batch here
-            break;
+            case "create":
+              // Already handled in real-time, but could batch here
+              break;
 
-          case "update":
-            await fetch(`${backendUrl}/attraction/${change.taskId}/`, {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(change.data),
-            });
-            break;
+            case "update":
+              const updateResponse = await fetch(
+                `${backendUrl}/attraction/${change.taskId}/`,
+                {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(change.data),
+                }
+              );
+              if (!updateResponse.ok) {
+                const errorData = await updateResponse.json().catch(() => ({}));
+                errors.push(
+                  `Failed to update task: ${
+                    errorData.detail || updateResponse.statusText
+                  }`
+                );
+              }
+              break;
 
-          case "delete":
-            await fetch(`${backendUrl}/attraction/${change.taskId}/`, {
-              method: "DELETE",
-            });
-            break;
+            case "delete":
+              const deleteResponse = await fetch(
+                `${backendUrl}/attraction/${change.taskId}/`,
+                {
+                  method: "DELETE",
+                }
+              );
+              if (!deleteResponse.ok) {
+                const errorData = await deleteResponse.json().catch(() => ({}));
+                errors.push(
+                  `Failed to delete task: ${
+                    errorData.detail || deleteResponse.statusText
+                  }`
+                );
+              }
+              break;
+          }
+        } catch (error) {
+          errors.push(
+            `Error processing ${change.type} for task ${change.taskId}: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`
+          );
         }
       }
 
-      // Clear pending changes
+      // If there were errors, show them but don't clear pending changes
+      if (errors.length > 0) {
+        console.error("Errors saving changes:", errors);
+        alert(
+          `❌ Some changes failed to save:\n${errors.join(
+            "\n"
+          )}\n\nPlease try again.`
+        );
+        return;
+      }
+
+      // Clear pending changes only if all succeeded
       setPendingChanges([]);
       setHasUnsavedChanges(false);
 
@@ -148,7 +202,11 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
       alert("✅ All changes saved successfully!");
     } catch (error) {
       console.error("Error saving changes:", error);
-      alert("❌ Error saving changes. Please try again.");
+      alert(
+        `❌ Error saving changes: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }\n\nPlease try again.`
+      );
     } finally {
       setIsSaving(false);
     }
@@ -397,12 +455,16 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
 
   const updateTask = (id: Id, updatedTask: Task) => {
     const task = tasks.find((t) => t.id === id);
-    if (!task) return;
+    if (!task || !updatedTask.attractionData) return;
 
-    const title =
-      updatedTask.attractionData?.title ||
-      updatedTask.content.split(" - ")[0] ||
-      updatedTask.content;
+    const updateData: Partial<AttractionsDetails> = {
+      title: updatedTask.attractionData.title,
+      location: updatedTask.attractionData.location,
+      category: updatedTask.attractionData.category,
+      cost: updatedTask.attractionData.cost,
+      mapUrl: updatedTask.attractionData.mapUrl || null,
+      ticket: updatedTask.attractionData.ticket || undefined,
+    };
 
     // Update pendingChanges list
     setPendingChanges((prev) => [
@@ -412,14 +474,16 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
       {
         type: "update",
         taskId: id,
-        data: { title },
+        data: updateData,
       },
     ]);
 
     setHasUnsavedChanges(true);
 
     // Replace the task in the list
-    const newTasks = tasks.map((t) => (t.id === id ? updatedTask : t));
+    const newTasks = tasks.map((t) =>
+      t.id === id ? { ...updatedTask, content: updatedContent } : t
+    );
     setTasks(newTasks);
   };
 
