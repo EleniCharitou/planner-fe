@@ -8,7 +8,7 @@ import TaskCard from "./TaskCard";
 
 interface Props {
   column: Column;
-  deleteColumn: (id: Id) => void;
+
   updateColumn: (id: Id, title: string) => void;
   createTask: (columnId: Id) => void;
   deleteTask: (id: Id) => void;
@@ -17,7 +17,6 @@ interface Props {
 }
 const ColumnContainer = ({
   column,
-  deleteColumn,
   updateColumn,
   createTask,
   tasks,
@@ -64,7 +63,6 @@ const ColumnContainer = ({
                  rounded-md
                  flex
                  flex-col
-                 
                  "
       />
     );
@@ -75,7 +73,7 @@ const ColumnContainer = ({
       style={style}
       {...attributes}
       {...listeners}
-      className="bg-gray-800
+      className="bg-teal-200
                  w-[300px]
                  h-[500px]
                  max-h-[500px]
@@ -85,7 +83,7 @@ const ColumnContainer = ({
                  "
     >
       <div
-        className="bg-gray-800
+        className="bg-teal-800
                      text-md
                      h-[60px]
                      cursor-grab
@@ -93,8 +91,6 @@ const ColumnContainer = ({
                      rounded-b-none
                      p-3
                      font-bold
-                     border-zinc-900 
-                     border-4
                      flex
                      items-center
                      justify-between"
@@ -104,7 +100,6 @@ const ColumnContainer = ({
             className="flex
                      justify-center
                      items-center
-                     bg-gray-800
                      px-2 
                      py-1
                      text-sm
@@ -121,7 +116,7 @@ const ColumnContainer = ({
             <input
               type="text"
               maxLength={20}
-              className="w-[200px] border border-gray-300 rounded px-2 py-1 outline-none focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+              className="w-[200px] border border-teal-500 rounded px-2 py-1 outline-none focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
               value={column.title}
               onChange={(e) => updateColumn(column.id, e.target.value)}
               autoFocus
@@ -135,9 +130,6 @@ const ColumnContainer = ({
             />
           )}
         </div>
-        <button onClick={() => deleteColumn(column.id)}>
-          <DeleteIcon />
-        </button>
       </div>
 
       <div
@@ -156,14 +148,12 @@ const ColumnContainer = ({
         </SortableContext>
       </div>
       <button
-        className="flex gap-2 items-center bg-gray-800
-                 border-gray-800 border-2 rounded-md p-4
-                 hover:bg-zinc-900 
-                 active:bg-black"
+        className="flex gap-2 items-center rounded-md p-4 text-black
+                 hover:bg-teal-900 hover:cursor-pointer"
         onClick={() => createTask(column.id)}
       >
         <PlusIcon />
-        Add adventure
+        Add attraction
       </button>
     </div>
   );

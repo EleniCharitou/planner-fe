@@ -46,7 +46,8 @@ export interface Task {
   id: Id;
   columnId: Id;
   content: string;
-  attractionData?: AttractionsDetails[];
+  position?: number;
+  attractionData: AttractionsDetails;
 }
 
 export interface TripData {

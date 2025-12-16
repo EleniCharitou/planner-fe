@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import PlusIcon from "../icon/PlusIcon";
 import { AttractionsDetails, Column, Id, Task } from "../types";
 import ColumnContainer from "./ColumnContainer";
@@ -12,7 +12,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "./TaskCard";
 import AttractionModal from "./AttractionModal";
@@ -30,7 +30,6 @@ interface KanbanBoardProps {
 
 const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
   const [columns, setColumns] = useState<Column[]>([]);
-  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,14 +71,25 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
 
             const allTasks: Task[] = [];
             attractionsData.forEach((columnData: any) => {
-              columnData.cards.forEach((attraction: any) => {
+              columnData.cards.forEach((attraction: any, index: number) => {
                 allTasks.push({
                   id: attraction.id,
                   columnId: attraction.column_id,
                   content: `${attraction.title} - ${attraction.location} (${attraction.category}) - ${attraction.cost}€`,
+                  position:
+                    attraction.position !== undefined
+                      ? attraction.position
+                      : index,
                   attractionData: attraction,
                 });
               });
+            });
+            // Sort tasks by column and position to maintain order
+            allTasks.sort((a, b) => {
+              if (a.columnId !== b.columnId) {
+                return String(a.columnId).localeCompare(String(b.columnId));
+              }
+              return (a.position || 0) - (b.position || 0);
             });
             setTasks(allTasks);
           }
@@ -93,8 +103,6 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
 
     loadBoardData();
   }, [tripId]);
-
-  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
   // Save all pending changes to database
   const saveChanges = async () => {
@@ -119,6 +127,7 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
                   },
                   body: JSON.stringify({
                     column_id: change.data.newColumnId,
+                    position: change.data.newPosition,
                   }),
                 }
               );
@@ -237,34 +246,6 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
     }
   };
 
-  const deleteColumn = async (id: Id) => {
-    // Prevent deletion of backlog and day of the trip
-    const column = columns.find((col) => col.id === id);
-    if (
-      column &&
-      (column.title.includes("Day ") || column.title.includes("Attractions"))
-    ) {
-      alert("Cannot delete trip day or backlog columns");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/column/${id}/`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        const filteredColumns = columns.filter((col) => col.id !== id);
-        setColumns(filteredColumns);
-
-        const newTasks = tasks.filter((t) => t.columnId !== id);
-        setTasks(newTasks);
-      }
-    } catch (error) {
-      console.error("Error deleting column:", error);
-    }
-  };
-
   const updateColumn = async (id: Id, title: string) => {
     // Prevent editing of backlog and day of the trip
     const column = columns.find((col) => col.id === id);
@@ -297,40 +278,125 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
   };
 
   const onDragStart = (event: DragStartEvent) => {
-    if (event.active.data.current?.type === "Column") {
-      setActiveColumn(event.active.data.current.column);
-      return;
-    }
-
     if (event.active.data.current?.type === "Task") {
       setActiveTask(event.active.data.current.task);
-      return;
     }
   };
 
   const onDragEnd = (event: DragEndEvent) => {
-    setActiveColumn(null);
     setActiveTask(null);
 
     const { active, over } = event;
 
     if (!over) return;
-    const activeColumnId = active.id;
-    const overColumnId = over.id;
 
-    if (activeColumnId === overColumnId) return;
+    // Handle task moves
+    if (active.data.current?.type !== "Task") return;
 
-    setColumns((columns) => {
-      const activeColumnIndex = columns.findIndex(
-        (col) => col.id === activeColumnId
-      );
+    const activeTaskId = active.id;
+    const isOverATask = over.data.current?.type === "Task";
+    const isOverAColumn = over.data.current?.type === "Column";
 
-      const overColumnIndex = columns.findIndex(
-        (col) => col.id === overColumnId
-      );
+    let newColumnId: Id | null = null;
 
-      return arrayMove(columns, activeColumnIndex, overColumnIndex);
-    });
+    if (isOverATask) {
+      const overTask = tasks.find((t) => t.id === over.id);
+      newColumnId = overTask?.columnId || null;
+    } else if (isOverAColumn) {
+      newColumnId = over.id;
+    }
+
+    if (newColumnId !== null) {
+      const activeTask = tasks.find((t) => t.id === activeTaskId);
+      if (!activeTask) return;
+
+      // Update task positions in state
+      setTasks((currentTasks) => {
+        const activeIndex = currentTasks.findIndex(
+          (t) => t.id === activeTaskId
+        );
+        let updatedTasks = [...currentTasks];
+
+        if (isOverATask) {
+          // Dropping on another task
+          const overIndex = currentTasks.findIndex((t) => t.id === over.id);
+
+          // Move the task to the new position
+          updatedTasks = arrayMove(updatedTasks, activeIndex, overIndex);
+
+          // Update the column ID
+          const movedTaskIndex = updatedTasks.findIndex(
+            (t) => t.id === activeTaskId
+          );
+          updatedTasks[movedTaskIndex] = {
+            ...updatedTasks[movedTaskIndex],
+            columnId: newColumnId!,
+          };
+        } else if (isOverAColumn) {
+          // Dropping on a column - move to end of that column
+          updatedTasks[activeIndex] = {
+            ...updatedTasks[activeIndex],
+            columnId: newColumnId!,
+          };
+        }
+
+        // Recalculate positions for all tasks in the target column
+        const tasksInTargetColumn = updatedTasks
+          .filter((t) => t.columnId === newColumnId)
+          .map((t, idx) => ({ ...t, position: idx }));
+
+        // Update all tasks in the target column with new positions
+        tasksInTargetColumn.forEach((taskWithPosition) => {
+          const taskIndex = updatedTasks.findIndex(
+            (t) => t.id === taskWithPosition.id
+          );
+          if (taskIndex !== -1) {
+            updatedTasks[taskIndex] = taskWithPosition;
+          }
+        });
+
+        // If moving between columns, also recalculate positions in the source column
+        if (activeTask.columnId !== newColumnId) {
+          const tasksInSourceColumn = updatedTasks
+            .filter((t) => t.columnId === activeTask.columnId)
+            .map((t, idx) => ({ ...t, position: idx }));
+
+          tasksInSourceColumn.forEach((taskWithPosition) => {
+            const taskIndex = updatedTasks.findIndex(
+              (t) => t.id === taskWithPosition.id
+            );
+            if (taskIndex !== -1) {
+              updatedTasks[taskIndex] = taskWithPosition;
+            }
+          });
+        }
+
+        // Calculate the final position for the moved task
+        const finalPosition = tasksInTargetColumn.findIndex(
+          (t) => t.id === activeTaskId
+        );
+        const actualPosition =
+          finalPosition === -1 ? tasksInTargetColumn.length : finalPosition;
+
+        // Track pending move change with position
+        setPendingChanges((prev) => [
+          ...prev.filter(
+            (change) => change.taskId !== activeTaskId || change.type !== "move"
+          ),
+          {
+            type: "move",
+            taskId: activeTaskId,
+            data: {
+              newColumnId,
+              newPosition: actualPosition,
+            },
+          },
+        ]);
+        setHasUnsavedChanges(true);
+
+        return updatedTasks;
+      });
+    }
   };
 
   const onDragOver = (event: DragOverEvent) => {
@@ -347,51 +413,36 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
 
     if (!isActiveATask) return;
 
-    const task = tasks.find((t) => t.id === activeTaskId);
-    let newColumnId = null;
-
-    //drop task over another task
     if (isActiveATask && isOverATask) {
       const overTask = tasks.find((t) => t.id === overTaskId);
-      newColumnId = overTask?.columnId;
+      const newColumnId = overTask?.columnId;
 
-      setTasks((tasks) => {
-        const activeIndex = tasks.findIndex((t) => t.id === activeTaskId);
-        const overIndex = tasks.findIndex((t) => t.id === overTaskId);
+      if (newColumnId) {
+        setTasks((tasks) => {
+          const activeIndex = tasks.findIndex((t) => t.id === activeTaskId);
+          const overIndex = tasks.findIndex((t) => t.id === overTaskId);
 
-        tasks[activeIndex].columnId = tasks[overIndex].columnId;
+          if (tasks[activeIndex].columnId !== newColumnId) {
+            tasks[activeIndex].columnId = newColumnId;
+          }
 
-        return arrayMove(tasks, activeIndex, overIndex);
-      });
+          return arrayMove(tasks, activeIndex, overIndex);
+        });
+      }
     }
 
     const isOverAColumn = over.data.current?.type === "Column";
 
-    //drop task over a column
     if (isActiveATask && isOverAColumn) {
-      newColumnId = overTaskId;
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeTaskId);
 
-        tasks[activeIndex].columnId = overTaskId;
+        if (tasks[activeIndex].columnId !== overTaskId) {
+          tasks[activeIndex].columnId = overTaskId;
+        }
 
         return arrayMove(tasks, activeIndex, activeIndex);
       });
-    }
-
-    // Track pending move change
-    if (task && newColumnId) {
-      setPendingChanges((prev) => [
-        ...prev.filter(
-          (change) => change.taskId !== activeTaskId || change.type !== "move"
-        ),
-        {
-          type: "move",
-          taskId: activeTaskId,
-          data: { newColumnId },
-        },
-      ]);
-      setHasUnsavedChanges(true);
     }
   };
 
@@ -422,10 +473,15 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
 
       if (response.ok) {
         const newAttraction = await response.json();
+        // Calculate position for the new task (add at the end of the column)
+        const tasksInColumn = tasks.filter(
+          (t) => t.columnId === selectedColumnId
+        );
         const newTask: Task = {
           id: newAttraction.id,
           columnId: selectedColumnId,
           content: `${attractionData.title} - ${attractionData.location} (${attractionData.category}) - ${attractionData.cost}€`,
+          position: tasksInColumn.length,
           attractionData: newAttraction,
         };
         setTasks([...tasks, newTask]);
@@ -466,6 +522,9 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
       ticket: updatedTask.attractionData.ticket || undefined,
     };
 
+    // Update the content field to match the format
+    const updatedContent = `${updatedTask.attractionData.title} - ${updatedTask.attractionData.location} (${updatedTask.attractionData.category}) - ${updatedTask.attractionData.cost}€`;
+
     // Update pendingChanges list
     setPendingChanges((prev) => [
       ...prev.filter(
@@ -503,7 +562,7 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
   return (
     <div className="relative">
       {hasUnsavedChanges && (
-        <div className="sticky top-0 z-10 bg-gray-300 text-black p-4 mb-4 rounded-b-lg shadow-lg">
+        <div className="sticky top-0 z-10 bg-gray-300 text-black p-4 mb-4 rounded-lg shadow-lg">
           <div className="flex items-center justify-between max-w-4xl mx-auto">
             <div className="flex items-center gap-3">
               <span className="text-xl">⚠️</span>
@@ -555,51 +614,24 @@ const KanbanBoard = ({ tripId }: KanbanBoardProps) => {
         >
           <div className="flex gap-6">
             <div className="flex gap-6">
-              <SortableContext items={columnsId}>
-                {columns.map((col) => (
-                  <ColumnContainer
-                    key={col.id}
-                    column={col}
-                    deleteColumn={deleteColumn}
-                    updateColumn={updateColumn}
-                    createTask={createTask}
-                    deleteTask={deleteTask}
-                    updateTask={updateTask}
-                    tasks={tasks.filter((task) => task.columnId === col.id)}
-                  />
-                ))}
-              </SortableContext>
-            </div>
-            <button
-              className="h-[60px] min-w-fit cursor-pointer hover:shadow-teal-500/25 flex items-center justify-center
-                        px-2 py-3 bg-gradient-to-r from-teal-400 to-teal-500 text-white rounded-xl 
-                        hover:from-teal-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg 
-                        font-semibold border border-teal-400 hover:border-teal-500 hover:cursor-pointer"
-              onClick={() => {
-                createNewColumn();
-              }}
-            >
-              <PlusIcon />
-              <span>Add Column</span>
-              <span>✨</span>
-            </button>
-          </div>
-
-          {createPortal(
-            <DragOverlay>
-              {activeColumn && (
+              {columns.map((col) => (
                 <ColumnContainer
-                  column={activeColumn}
-                  deleteColumn={deleteColumn}
+                  key={col.id}
+                  column={col}
                   updateColumn={updateColumn}
                   createTask={createTask}
                   deleteTask={deleteTask}
                   updateTask={updateTask}
-                  tasks={tasks.filter(
-                    (task) => task.columnId === activeColumn.id
-                  )}
+                  tasks={tasks
+                    .filter((task) => task.columnId === col.id)
+                    .sort((a, b) => (a.position || 0) - (b.position || 0))}
                 />
-              )}
+              ))}
+            </div>
+          </div>
+
+          {createPortal(
+            <DragOverlay>
               {activeTask && (
                 <TaskCard
                   task={activeTask}

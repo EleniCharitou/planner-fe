@@ -79,6 +79,23 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
         {...listeners}
         className="bg-zinc-900 p-3 rounded-xl space-y-3 cursor-default"
       >
+        {/* Title */}
+        <input
+          type="text"
+          className="w-full p-1 rounded bg-zinc-800 text-white border border-zinc-700"
+          value={task.attractionData.title}
+          placeholder="Title"
+          onChange={(e) =>
+            updateTask(task.id, {
+              ...task,
+              attractionData: {
+                ...task.attractionData,
+                title: e.target.value,
+              },
+            })
+          }
+        />
+
         {/* Location */}
         <input
           type="text"
@@ -194,7 +211,7 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
       style={style}
       {...attributes}
       {...listeners}
-      className="task bg-zinc-900 p-2.5 h-[100px] min-h-[100px]
+      className="task bg-teal-100 p-2.5 h-[100px] min-h-[100px] text-black font-medium 
                    items-center flex text-left rounded-xl 
                    hover:ring-1 hover:ring-inset hover:ring-teal-500 
                    cursor-grab relative"
@@ -206,12 +223,23 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
       }}
     >
       <div>
-        {/* Row 1: Location */}
-        <div className="mb-2">📍 {task.attractionData.location}</div>
-        {/* Row 2: Two-column layout */}
+        {/* Row 1: Title-Location */}
         <div className="grid grid-cols-1 gap-4">
-          {/* Left column: Category + Cost */}
-          <div className="flex items-center  gap-4">
+          {/* Left column: Title */}
+          <div className="flex items-center gap-4">
+            <span
+              className="fit-content truncate"
+              title={task.attractionData.title}
+            >
+              ✨ {task.attractionData.title}
+            </span>
+            <span className="fit-content truncate" title="Title">
+              📌{task.attractionData.location}
+            </span>
+          </div>
+
+          {/* Row 2: Category + Cost + Map + Ticket*/}
+          <div className="flex items-center gap-4">
             <span className="fit-content" title="Cost">
               💰 {task.attractionData.cost}
             </span>
@@ -249,16 +277,15 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
           </div>
         </div>
       </div>
-
-      <div className="flex flex-col items-center space-y-2 absolute right-2 top-1/2 transform -translate-y-1/2">
+      <div className="flex items-center absolute right-0 -bottom-3 transform -translate-y-1/2">
         <button
-          className="hover:text-teal-500 hover:cursor-pointer"
+          className="hover:text-teal-500 hover:cursor-pointer w-8 h-8"
           onClick={() => setEditMode(true)}
         >
           <MdEdit />
         </button>
         <button
-          className="hover:text-teal-500 hover:cursor-pointer"
+          className="hover:text-teal-500 hover:cursor-pointer w-8 h-8"
           onClick={() => {
             deleteTask(task.id);
           }}
