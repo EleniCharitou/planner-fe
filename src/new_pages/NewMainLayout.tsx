@@ -1,9 +1,16 @@
 import { Link, Outlet } from "react-router-dom";
 import { MdCardTravel, MdOutlineModeOfTravel } from "react-icons/md";
-import { BookOpen, Calendar, Video } from "lucide-react";
+import { BookOpen, Calendar, LogOut, User, Video } from "lucide-react";
 import Footer from "../components/Footer";
+import { useAuth } from "../context/AuthContext";
 
 function NewMainLayout() {
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <div className="min-h-screen">
       {/* Navbar */}
@@ -59,13 +66,32 @@ function NewMainLayout() {
                 <BookOpen size="18px" />
                 <span>Articles</span>
               </Link>
+            </div>
+
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 text-white">
+                  <User size="18px" />
+                  <span className="text-sm">
+                    {user?.first_name || user?.name || user?.email}
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1 text-white hover:text-teal-800 transition-colors duration-200 px-2 py-2 rounded-lg hover:bg-teal-500 hover:cursor-pointer"
+                >
+                  <LogOut size="18px" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
               <Link
                 to="/login"
-                className="text-bold text-lg text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1"
+                className=" text-white hover:text-teal-800 transition-colors duration-200 flex items-center space-x-1 px-2 py-2 border-1 border-white rounded-lg hover:bg-white"
               >
-                <span>Login|SignUp</span>
+                <span>Login | Sign Up</span>
               </Link>
-            </div>
+            )}
 
             {/* Mobile menu button (later) */}
             <div className="md:hidden">

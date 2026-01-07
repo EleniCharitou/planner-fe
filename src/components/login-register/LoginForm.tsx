@@ -1,52 +1,30 @@
 import React, { useState } from "react";
 import { User, Mail, Lock } from "lucide-react";
-import backendUrl from "../../config";
+import { useAuth } from "../../context/AuthContext";
+import { useLocation, useNavigate } from "react-router";
 
-interface LoginFormProps {
-  onLoginSuccess: (userData: { name: string; email: string }) => void;
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
+const LoginForm: React.FC = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async () => {
     setLoading(true);
+    setError("");
 
     try {
-      const response = await fetch(`${backendUrl}/users/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData),
-      });
-      console.log("info for login: ", loginData);
+      await login(loginData.email, loginData.password);
 
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
-      const data = await response.json();
-      const token = data.access;
-      localStorage.setItem("token", token);
-
-      const userResponse = await fetch(`${backendUrl}/users/user`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!userResponse.ok) {
-        throw new Error("Failed to fetch user data");
-      }
-      const userData = await userResponse.json();
-
-      onLoginSuccess({ name: userData.name, email: userData.email });
-
-      setLoginData({ email: "", password: "" });
+      // Redirect to the page the user was trying to access before login
+      const from = (location.state as any)?.from?.pathname || "/";
+      navigate(from, { replace: true });
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed. Please check your credentials.");
+      setError("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -67,6 +45,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
         <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>
         <p className="text-gray-600 mt-2">Log in to continue</p>
       </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
 
       <div className="space-y-6">
         <div className="space-y-2">
@@ -98,7 +82,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
               }
               onKeyDown={handleKeyDown}
               className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 outline-none text-black"
-              placeholder="Type yur password..."
+              placeholder="Type your password..."
             />
           </div>
         </div>

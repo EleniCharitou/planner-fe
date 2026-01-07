@@ -20,7 +20,7 @@ const BlogContainer = () => {
   }, []);
 
   return (
-    <div className="flex justify-between items-start gap-2 p-1">
+    <div className="flex justify-start items-start gap-2 p-1">
       {loading ? (
         <div className="flex justify-center w-full">
           <Spinner loading={loading} />

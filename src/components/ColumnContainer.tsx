@@ -1,5 +1,4 @@
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import DeleteIcon from "../icon/DeleteIcon";
 import { Column, Id, Task } from "../types";
 import { CSS } from "@dnd-kit/utilities";
 import { useMemo, useState } from "react";
@@ -8,7 +7,6 @@ import TaskCard from "./TaskCard";
 
 interface Props {
   column: Column;
-
   updateColumn: (id: Id, title: string) => void;
   createTask: (columnId: Id) => void;
   deleteTask: (id: Id) => void;

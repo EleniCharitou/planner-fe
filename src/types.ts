@@ -14,7 +14,7 @@ export interface ColumnData {
 }
 
 export interface AttractionsDetails {
-  id?: string;
+  id: string;
   column_id: string;
   title: string;
   location: string;
@@ -45,7 +45,6 @@ export interface Column {
 export interface Task {
   id: Id;
   columnId: Id;
-  content: string;
   position?: number;
   attractionData: AttractionsDetails;
 }
@@ -58,4 +57,32 @@ export interface TripData {
   start_time: string;
   end_date: string;
   end_time: string;
+  owner?: number;
+  owner_email?: string;
+  duration_days?: number;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  name?: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterCredentials {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+}
+
+export interface AuthResponse {
+  access: string;
+  refresh: string;
 }

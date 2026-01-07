@@ -86,11 +86,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ initialView = "login" }) => {
             </div>
 
             {/* Render Login or Register Form */}
-            {showLogin ? (
-              <LoginForm onLoginSuccess={handleLoginSuccess} />
-            ) : (
-              <RegisterForm onRegisterSuccess={handleRegisterSuccess} />
-            )}
+            {showLogin ? <LoginForm /> : <RegisterForm />}
           </div>
         ) : (
           <div className="text-center animate-fade-in">

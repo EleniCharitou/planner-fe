@@ -1,81 +1,51 @@
 import React, { useState } from "react";
-import { UserPlus, User, Mail, Lock } from "lucide-react";
-import backendUrl from "../../config";
+import { User, Mail, Lock } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-interface RegisterFormProps {
-  onRegisterSuccess: (userData: { name: string; email: string }) => void;
-}
-
-const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
+const RegisterForm: React.FC = () => {
   const [registerData, setRegisterData] = useState({
-    name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    first_name: "",
+    last_name: "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleRegister = async () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(registerData.email)) {
-      alert("Please enter a valid email address!");
-      return;
-    }
-    if (registerData.password !== registerData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
     setLoading(true);
+    setError("");
+
+    if (registerData.password !== registerData.confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
+    if (registerData.password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      setLoading(false);
+      return;
+    }
 
     try {
-      const response = await fetch(`${backendUrl}/users/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: registerData.name,
-          email: registerData.email,
-          password: registerData.password,
-        }),
+      await register({
+        email: registerData.email,
+        password: registerData.password,
+        first_name: registerData.first_name,
+        last_name: registerData.last_name,
       });
 
-      if (!response.ok) {
-        throw new Error("Registration failed");
-      }
-      const data = await response.json();
-      const token = data.access;
-      localStorage.setItem("token", token);
-
-      const userResponse = await fetch(`${backendUrl}/users/user`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!userResponse.ok) {
-        throw new Error("Failed to fetch user data");
-      }
-
-      const userData = await userResponse.json();
-
-      onRegisterSuccess({
-        name:
-          userData.name || userData.username || userData.email.split("@")[0],
-        email: userData.email,
-      });
-
-      setRegisterData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-    } catch (error) {
+      // After successful registration and auto-login, redirect to home
+      navigate("/", { replace: true });
+    } catch (error: any) {
       console.error("Registration error:", error);
-      alert("Registration failed. Please try again.");
+      setError(error.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -91,26 +61,51 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
     <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl p-8 animate-slide-in">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-teal-500 rounded-2xl mb-4 shadow-lg">
-          <UserPlus className="w-8 h-8 text-white" />
+          <User className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-3xl font-bold text-gray-800">Create Account</h2>
-        <p className="text-gray-600 mt-2">Join us today</p>
+        <p className="text-gray-600 mt-2">
+          Join us to start planning your trips
+        </p>
       </div>
 
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Full Name</label>
-          <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
+
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              First Name
+            </label>
             <input
               type="text"
-              value={registerData.name}
+              value={registerData.first_name}
               onChange={(e) =>
-                setRegisterData({ ...registerData, name: e.target.value })
+                setRegisterData({ ...registerData, first_name: e.target.value })
               }
               onKeyDown={handleKeyDown}
-              className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 outline-none text-black"
-              placeholder="John Doe"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 outline-none text-black"
+              placeholder="John"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Last Name
+            </label>
+            <input
+              type="text"
+              value={registerData.last_name}
+              onChange={(e) =>
+                setRegisterData({ ...registerData, last_name: e.target.value })
+              }
+              onKeyDown={handleKeyDown}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 outline-none text-black"
+              placeholder="Doe"
             />
           </div>
         </div>
@@ -144,7 +139,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
               }
               onKeyDown={handleKeyDown}
               className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 outline-none text-black"
-              placeholder="••••••••"
+              placeholder="At least 8 characters"
             />
           </div>
         </div>
@@ -166,7 +161,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
               }
               onKeyDown={handleKeyDown}
               className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 outline-none text-black"
-              placeholder="••••••••"
+              placeholder="Confirm your password"
             />
           </div>
         </div>
@@ -176,7 +171,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
           disabled={loading}
           className="w-full py-3 bg-teal-500 text-white rounded-xl font-semibold hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "Account created, now login" : "Create Account"}
+          {loading ? "Creating account..." : "Sign Up"}
         </button>
       </div>
     </div>

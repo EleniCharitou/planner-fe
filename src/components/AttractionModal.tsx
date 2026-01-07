@@ -1,27 +1,38 @@
 import { useState } from "react";
+import { AttractionsDetails } from "../types";
+import { useBlockBodyScroll } from "../utilities/useLockBodyScroll";
+import { MapPin } from "lucide-react";
 
 interface AttractionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (attractionData: any) => void;
+  attraction: AttractionsDetails | null;
+  onSubmit: (attractionData: AttractionsDetails) => void;
   columnTitle: string;
 }
 
 const AttractionModal = ({
   isOpen,
   onClose,
+  attraction,
   onSubmit,
-  columnTitle,
 }: AttractionModalProps) => {
-  const [formData, setFormData] = useState({
-    title: "",
-    location: "",
-    category: "other",
-    mapUrl: "",
-    ticket: "",
-    cost: 0,
-    visited: false,
-  });
+  const [formData, setFormData] = useState<AttractionsDetails>(
+    attraction ?? {
+      id: "",
+      column_id: "",
+      title: "",
+      location: "",
+      category: "other",
+      mapUrl: "",
+      ticket: "",
+      date: "",
+      cost: 0,
+      visited: false,
+    }
+  );
+
+  useBlockBodyScroll(isOpen);
 
   const categories = [
     { value: "museum", label: "🏛️ Museum" },
@@ -42,11 +53,14 @@ const AttractionModal = ({
     }
     onSubmit(formData);
     setFormData({
+      id: "",
+      column_id: "",
       title: "",
       location: "",
       category: "other",
       mapUrl: "",
       ticket: "",
+      date: "",
       cost: 0,
       visited: false,
     });
@@ -60,7 +74,9 @@ const AttractionModal = ({
     setFormData((prev) => ({
       ...prev,
       [name]:
-        type === "checkbox"
+        name === "category"
+          ? (value as AttractionsDetails["category"])
+          : type === "checkbox"
           ? (e.target as HTMLInputElement).checked
           : type === "number"
           ? parseFloat(value) || 0
@@ -71,18 +87,16 @@ const AttractionModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 text-black bg-teal-300/90 flex items-center justify-center z-50 p-4">
-      <div className="bg-amber-50 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="bg-teal-500 p-6 rounded-t-2xl">
+    <div className="fixed inset-0 backdrop-blur-xs bg-teal-300/70 flex items-center justify-center z-50 p-4">
+      <div className="bg-amber-50 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="bg-teal-500 p-6 rounded-t-2xl flex-shrink-0">
           <h2 className="text-2xl font-bold text-white text-center">
-            ✨ Add New Attraction
+            ✨ Attraction
           </h2>
-          <p className="text-teal-100 text-center mt-2">
-            Adding to: <span className="font-semibold">{columnTitle}</span>
-          </p>
         </div>
 
-        <div className="p-6 space-y-6">
+        {/* Scrollable Body */}
+        <div className="p-6 text-black space-y-6 overflow-y-auto flex-1 max-h-[calc(90vh-120px)]">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -91,23 +105,23 @@ const AttractionModal = ({
               <input
                 type="text"
                 name="title"
-                value={formData.title}
+                value={formData.title ?? ""}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus-visible:border-transparent"
                 placeholder="e.g., Eiffel Tower"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                📍 Location *
+              <label className="inline-flex items-center text-sm font-semibold text-gray-700 mb-2 gap-1.5">
+                <MapPin className="w-4 h-4 text-orange-500" /> Location *
               </label>
               <input
                 type="text"
                 name="location"
-                value={formData.location}
+                value={formData.location ?? ""}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-transparent"
                 placeholder="e.g., Paris, France"
               />
             </div>
@@ -120,7 +134,7 @@ const AttractionModal = ({
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-transparent"
               >
                 {categories.map((cat) => (
                   <option key={cat.value} value={cat.value}>
@@ -141,7 +155,7 @@ const AttractionModal = ({
                 onChange={handleChange}
                 min={0}
                 step={1}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-transparent"
                 placeholder="0.00"
               />
             </div>
@@ -154,9 +168,9 @@ const AttractionModal = ({
             <input
               type="url"
               name="mapUrl"
-              value={formData.mapUrl}
+              value={formData.mapUrl ?? ""}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1  focus:ring-teal-500 focus:border-transparent"
               placeholder="https://maps.google.com/..."
             />
           </div>
@@ -168,15 +182,16 @@ const AttractionModal = ({
             <input
               type="url"
               name="ticket"
-              value={formData.ticket}
+              value={formData.ticket ?? ""}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-transparent"
               placeholder="https://tickets.example.com/..."
             />
           </div>
+        </div>
 
-          {/* Visited Checkbox-to be shown in next steps program|during the trip*/}
-          {/* <div className="flex items-center">
+        {/* Visited Checkbox-to be shown in next steps program|during the trip*/}
+        {/* <div className="flex items-center">
             <input
               type="checkbox"
               name="visited"
@@ -189,23 +204,21 @@ const AttractionModal = ({
             </label>
           </div> */}
 
-          <div className="flex gap-4 pt-6 border-t">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:cursor-pointer hover:bg-teal-200 transition-colors font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-semibold shadow-lg
-                        hover:from-teal-600 hover:to-teal-800 transition-all duration-300 hover:cursor-pointer"
-            >
-              ✨ Add Attraction
-            </button>
-          </div>
+        <div className="p-4 border-t flex flex-wrap gap-4 justify-center flex-shrink-0 bg-amber-50">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 min-w-[120px] max-w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-teal-200 hover:cursor-pointer transition-colors font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="flex-1 min-w-[120px] max-w-full px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-semibold shadow-lg hover:from-teal-600 hover:to-teal-800 hover:cursor-pointer transition-all duration-300"
+          >
+            Save Changes
+          </button>
         </div>
       </div>
     </div>

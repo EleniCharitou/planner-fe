@@ -12,47 +12,79 @@ import PageNotFound from "./pages/PageNotFound";
 import DetailPage from "./pages/DetailPage";
 import EditBlogPage from "./pages/EditeBlogPage";
 import LoginPage from "./new_pages/LoginPage";
-import axios from "axios";
 import { BlogDetails } from "./types";
 import { toast } from "react-toastify";
 import NewMainLayout from "./new_pages/NewMainLayout";
 import Homepage from "./new_pages/Homepage";
 import AllBlogsPage from "./pages/AllBlogsPage";
-import backendUrl from "./config";
+import api from "./api";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 const App = () => {
   const createBlog = (data: Omit<BlogDetails, "id" | "slug">) => {
-    axios
-      .post(`${backendUrl}/posts/`, data)
+    api
+      .post(`/posts/`, data)
       .then((res) => {
         toast.success("Blog added successfully!", res);
       })
-      .catch((err) => console.log(err.message));
+      .catch((err) => {
+        console.error(err.message);
+        toast.error("Failed to add blog");
+      });
   };
 
   const editBlog = (
     data: Omit<BlogDetails, "id" | "slug">,
     slug: string | undefined
   ) => {
-    axios
-      .put(`${backendUrl}posts/${slug}/`, data)
+    api
+      .put(`/posts/${slug}/`, data)
       .then(() => {
         toast.success("Blog updated successfully!");
       })
-      .catch((err) => console.log(err.message));
+      .catch((err) => {
+        console.error(err.message);
+        toast.error("Failed to update blog");
+      });
   };
 
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<NewMainLayout />}>
         <Route index element={<Homepage />} />
-        <Route path="/program" element={<Trip />} />
-        <Route path="/memories" element={<Memories />} />
-        <Route path="/during" element={<During />} />
+        <Route
+          path="/program"
+          element={
+            <ProtectedRoute>
+              <Trip />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/memories"
+          element={
+            <ProtectedRoute>
+              <Memories />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/during"
+          element={
+            <ProtectedRoute>
+              <During />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/articles" element={<AllBlogsPage />} />
         <Route
           path="/add-blog"
-          element={<AddBlogPage createBlog={createBlog} />}
+          element={
+            <ProtectedRoute>
+              <AddBlogPage createBlog={createBlog} />
+            </ProtectedRoute>
+          }
         />
         <Route path="/blogs/:slug" element={<DetailPage />} />
         <Route
@@ -69,7 +101,9 @@ const App = () => {
     )
   );
   return (
-    <RouterProvider router={router} future={{ v7_startTransition: true }} />
+    <AuthProvider>
+      <RouterProvider router={router} future={{ v7_startTransition: true }} />
+    </AuthProvider>
   );
 };
 
