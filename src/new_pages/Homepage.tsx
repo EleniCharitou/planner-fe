@@ -22,11 +22,11 @@ function Homepage() {
           {/* First rectangle: 2 columns, 2 rows */}
           <div className="col-span-3 row-span-1 bg-teal-500 rounded-lg shadow-lg flex p-6 ">
             <div className="text-white text-left">
-              <h2 className="text-2xl font-semibold text-left mb-3">
+              <h2 className="text-2xl font-extrabold text-left mb-3">
                 Your space to plan and track your next trip
               </h2>
               <p className="mb-4">
-                Everythning in one place for your next trip planning for you and
+                Everything in one place for your next trip planning for you and
                 your friends.
               </p>
               <ul className="list-disc font-normal text-white px-4 space-y-2">

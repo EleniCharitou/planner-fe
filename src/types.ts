@@ -42,13 +42,6 @@ export interface Column {
   trip_id?: number;
 }
 
-export interface Task {
-  id: Id;
-  columnId: Id;
-  position?: number;
-  attractionData: AttractionsDetails;
-}
-
 export interface TripData {
   id: number;
   destination: string;

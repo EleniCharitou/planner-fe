@@ -27,7 +27,7 @@ function NewMainLayout() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       {/* Navbar */}
       <nav className="bg-teal-600 shadow-lg">
         <div className="max-w-6xl mx-auto px-6">
@@ -210,7 +210,7 @@ function NewMainLayout() {
         )}
       </nav>
 
-      <main>
+      <main className="flex-grow">
         <Outlet />
       </main>
       <Footer />
