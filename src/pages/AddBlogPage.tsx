@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   BookOpen,
-  User,
   FileText,
   PenTool,
   ArrowLeft,
@@ -12,10 +11,12 @@ import {
   Upload,
 } from "lucide-react";
 import { BlogDetails } from "../types";
+import { useAuth } from "../context/AuthContext";
+import estimateReadTime from "../utilities/readTime";
 
 interface AddBlogPageProps {
   createBlog: (
-    blog: Omit<BlogDetails, "id" | "slug">,
+    blog: Omit<BlogDetails, "id" | "slug" | "author">,
     imageFile?: File | null
   ) => void;
 }
@@ -23,11 +24,12 @@ interface AddBlogPageProps {
 const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
   const [picture, setPicture] = useState<File | null>(null);
   const [picturePreview, setPicturePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const author = user?.name;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,11 +71,10 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
     setIsSubmitting(true);
 
     try {
-      const blogData: Omit<BlogDetails, "id" | "slug"> = {
+      const blogData: Omit<BlogDetails, "id" | "slug" | "author"> = {
         title: title,
         content: content,
-        author: author,
-        picture: null, // Will be updated after image upload if there's an image
+        picture: null,
       };
 
       if (picture) {
@@ -89,15 +90,6 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const estimateReadTime = (content: string) => {
-    const wordsPerMinute = 200;
-    const wordCount = content
-      .split(/\s+/)
-      .filter((word) => word.length > 0).length;
-    const readTime = Math.ceil(wordCount / wordsPerMinute);
-    return readTime || 1;
   };
 
   return (
@@ -136,7 +128,7 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
             <div className="mb-8 text-center">
               <BookOpen size="48px" className="mx-auto text-teal-500 mb-4" />
               <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                Create Your Article
+                Write Your Article
               </h2>
               <p className="text-gray-600">
                 Fill in the details below to publish your travel story
@@ -191,29 +183,6 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
               />
               <p className="text-xs text-gray-500 mt-1">
                 {title.length}/200 characters
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <label
-                htmlFor="author"
-                className="flex items-center space-x-2 text-gray-700 text-sm font-bold mb-3"
-              >
-                <User size="18px" className="text-teal-500" />
-                <span>Author Name</span>
-              </label>
-              <input
-                id="author"
-                type="text"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all text-gray-800 placeholder-gray-400"
-                placeholder="Enter your name..."
-                required
-                maxLength={100}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                This will be displayed as the article author
               </p>
             </div>
 
@@ -336,20 +305,18 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
             <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
               <Link
                 to="/articles"
-                className="flex-1 inline-flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all font-medium"
+                className="flex-1 inline-flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg
+                 text-gray-700 hover:bg-gray-300 transition-all font-medium"
               >
                 <span>Cancel</span>
               </Link>
 
               <button
                 type="submit"
-                disabled={
-                  isSubmitting ||
-                  !title.trim() ||
-                  !content.trim() ||
-                  !author.trim()
-                }
-                className="flex-1 inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg disabled:transform-none disabled:shadow-none disabled:cursor-not-allowed"
+                disabled={isSubmitting || !title.trim() || !content.trim()}
+                className="flex-1 inline-flex items-center justify-center space-x-2 bg-gradient-to-r bg-teal-500 
+                         text-white font-bold py-3 px-6 rounded-lg transition-colors hover:bg-teal-700
+                         hover:cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-700"
               >
                 {isSubmitting ? (
                   <>

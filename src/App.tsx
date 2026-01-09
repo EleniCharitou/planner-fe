@@ -22,7 +22,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 
 const App = () => {
-  const createBlog = (data: Omit<BlogDetails, "id" | "slug">) => {
+  const createBlog = (data: Omit<BlogDetails, "id" | "slug" | "author">) => {
     api
       .post(`/posts/`, data)
       .then((res) => {
@@ -34,18 +34,19 @@ const App = () => {
       });
   };
 
-  const editBlog = (
-    data: Omit<BlogDetails, "id" | "slug">,
-    slug: string | undefined
-  ) => {
+  const editBlog = (data: FormData, slug: string | undefined) => {
     api
-      .put(`/posts/${slug}/`, data)
+      .patch(`/posts/${slug}/`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then(() => {
-        toast.success("Blog updated successfully!");
+        toast.success("Article updated successfully!");
       })
       .catch((err) => {
         console.error(err.message);
-        toast.error("Failed to update blog");
+        toast.error("Failed to update Article");
       });
   };
 

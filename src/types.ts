@@ -4,7 +4,9 @@ export interface BlogDetails {
   content: string;
   slug: string;
   author: string;
-  picture?: string | null;
+  author_username?: string;
+  picture: string | null;
+  created_at?: string;
 }
 
 export interface ColumnData {

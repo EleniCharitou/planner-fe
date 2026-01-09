@@ -9,20 +9,10 @@ import {
   Plus,
   Filter,
 } from "lucide-react";
-import axios from "axios";
 import Spinner from "../components/Spinner";
-import backendUrl from "../config";
-
-interface BlogDetails {
-  id: number;
-  title: string;
-  content: string;
-  slug: string;
-  author: string;
-  picture: string | null;
-  created_at?: string;
-  updated_at?: string;
-}
+import estimateReadTime from "../utilities/readTime";
+import { BlogDetails } from "../types";
+import api from "../api";
 
 const AllBlogsPage = () => {
   const [articles, setArticles] = useState<BlogDetails[]>([]);
@@ -33,7 +23,7 @@ const AllBlogsPage = () => {
   const [selectedAuthor, setSelectedAuthor] = useState<string>("all");
 
   const uniqueAuthors = React.useMemo(() => {
-    const authors = articles.map((article) => article.author);
+    const authors = articles.map((article) => article.author_username);
     return ["all", ...Array.from(new Set(authors))];
   }, [articles]);
 
@@ -47,7 +37,7 @@ const AllBlogsPage = () => {
 
   const fetchArticles = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/posts/`);
+      const response = await api.get(`/posts/`);
       setArticles(response.data);
       setLoading(false);
     } catch (error) {
@@ -61,10 +51,13 @@ const AllBlogsPage = () => {
       const matchesSearch =
         article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.author_username
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         article.content.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesAuthor =
-        selectedAuthor === "all" || article.author === selectedAuthor;
+        selectedAuthor === "all" || article.author_username === selectedAuthor;
 
       return matchesSearch && matchesAuthor;
     });
@@ -103,13 +96,6 @@ const AllBlogsPage = () => {
       month: "short",
       day: "numeric",
     });
-  };
-
-  const estimateReadTime = (content: string) => {
-    const wordsPerMinute = 200;
-    const wordCount = content.split(/\s+/).length;
-    const readTime = Math.ceil(wordCount / wordsPerMinute);
-    return readTime;
   };
 
   const clearFilters = () => {
@@ -335,7 +321,7 @@ const AllBlogsPage = () => {
                       <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
                         <div className="flex items-center space-x-2">
                           <User size="16px" />
-                          <span>by {article.author}</span>
+                          <span>by {article.author_username}</span>
                         </div>
 
                         {article.created_at && (

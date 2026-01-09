@@ -1,17 +1,27 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { BlogDetails } from "../types";
 import Spinner from "../components/Spinner";
-import { ArrowLeft, BookOpen, Clock, Share2, User } from "lucide-react";
-import backendUrl from "../config";
-// import Modal from '../components/Modal'
+import { BookOpen } from "lucide-react";
+import { toast } from "react-toastify";
+import api from "../api";
+import { useAuth } from "../context/AuthContext";
+import ErrorState from "../components/blog/components/ErrorState";
+import DeleteModal from "../sub-components/DeleteModal";
+import ArticleContent from "../components/blog/components/ArticleContent";
+import { useShare } from "../utilities/useShare";
 
 const DetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { shareArticle } = useShare();
+
   const [article, setArticle] = useState<BlogDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!slug) {
@@ -20,8 +30,8 @@ const DetailPage = () => {
       return;
     }
 
-    axios
-      .get(`${backendUrl}/posts/${slug}/`)
+    api
+      .get(`/posts/${slug}/`)
       .then((res) => {
         setArticle(res.data);
         setLoading(false);
@@ -33,29 +43,30 @@ const DetailPage = () => {
       });
   }, [slug]);
 
-  const estimateReadTime = (content: string) => {
-    const wordsPerMinute = 200;
-    const wordCount = content.split(/\s+/).length;
-    const readTime = Math.ceil(wordCount / wordsPerMinute);
-    return readTime;
-  };
-
-  const handleShare = async () => {
-    if (navigator.share && article) {
-      try {
-        await navigator.share({
-          title: article.title,
-          text: `Check out this article: ${article.title}`,
-          url: window.location.href,
-        });
-      } catch (err) {
-        console.log("Error sharing:", err);
-      }
-    } else {
-      //Copy URL to clipboard
-      navigator.clipboard.writeText(window.location.href);
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await api.delete(`/posts/${slug}/`);
+      toast.success("Article deleted successfully");
+      navigate("/articles");
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete article");
+      setIsDeleting(false);
+      setShowDeleteModal(false);
     }
   };
+
+  const handleShareClick = () => {
+    if (article) {
+      setArticle(article);
+      shareArticle(article);
+    }
+  };
+
+  const isAuthor = article
+    ? String(user?.id) === String(article.author)
+    : false;
 
   if (loading) {
     return (
@@ -67,36 +78,27 @@ const DetailPage = () => {
 
   if (error || !article) {
     return (
-      <div className="min-h-screen bg-amber-50 flex justify-center items-center">
-        <div className="text-center">
-          <BookOpen size="80px" className="mx-auto text-gray-300 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-600 mb-2">
-            Article Not Found
-          </h2>
-          <p className="text-gray-500 mb-6">
-            {error || "The article you're looking for doesn't exist."}
-          </p>
-          <Link
-            to="/"
-            className="inline-flex items-center space-x-2 bg-teal-500 hover:bg-teal-600 
-                     text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-          >
-            <ArrowLeft size="20px" />
-            <span>Back to home</span>
-          </Link>
-        </div>
-      </div>
+      <ErrorState
+        error={error || "The article you're looking for doesn't exist."}
+      />
     );
   }
 
   return (
     <div className="min-h-screen bg-amber-50">
-      {/* Hero Section with Image */}
+      <DeleteModal
+        show={showDeleteModal}
+        articleTitle={article.title}
+        isDeleting={isDeleting}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
+
       <div className="relative h-96 bg-gradient-to-br from-teal-400 to-teal-600 overflow-hidden">
         {article.picture ? (
           <>
             <img
-              src={`${article.picture}`}
+              src={article.picture}
               alt={article.title}
               className="w-full h-full object-cover"
             />
@@ -109,62 +111,16 @@ const DetailPage = () => {
         )}
       </div>
 
-      {/* Article Content */}
-      <div className="max-w-4xl mx-auto px-6 -mt-20 relative z-10">
-        <article className="bg-white rounded-lg shadow-xl overflow-hidden">
-          <div className="p-8 pb-6">
-            <h1 className="text-4xl font-bold text-gray-800 mb-6 leading-tight">
-              {article.title}
-            </h1>
-
-            <div className="flex flex-wrap items-center gap-6 text-gray-600 border-b border-gray-200 pb-6">
-              <div className="flex items-center space-x-2">
-                <User size="18px" className="text-teal-500" />
-                <span className="font-medium">by {article.author}</span>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Clock size="18px" className="text-teal-500" />
-                <span>{estimateReadTime(article.content)} min read</span>
-              </div>
-              <button
-                onClick={handleShare}
-                className="inline-flex items-center absolute right-16 space-x-2 text-teal-500 hover:text-teal-700 
-                         font-medium transition-colors hover:cursor-pointer"
-              >
-                <Share2 size="18px" />
-                <span>Share</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="px-8 pb-8">
-            <div className="prose prose-lg max-w-none">
-              <div
-                className="text-gray-700 leading-relaxed"
-                style={{
-                  fontSize: "18px",
-                  lineHeight: "1.8",
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {article.content}
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <div className="mt-8 mb-12 text-center">
-          <Link
-            to="/"
-            className="inline-flex items-center space-x-2 bg-teal-500 hover:bg-teal-600 
-                     text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 
-                     transform hover:scale-105 hover:shadow-lg"
-          >
-            <ArrowLeft size="20px" />
-            <span>Back to home</span>
-          </Link>
-        </div>
+      <div className="max-w-4xl mx-auto p-6 -mt-20 relative z-10">
+        <ArticleContent
+          title={article.title}
+          author={article.author_username || "no name"}
+          content={article.content}
+          slug={article.slug}
+          isAuthor={isAuthor}
+          onDelete={() => setShowDeleteModal(true)}
+          onShare={handleShareClick}
+        />
       </div>
     </div>
   );

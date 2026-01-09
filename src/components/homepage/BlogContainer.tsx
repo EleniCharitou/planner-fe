@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import BlogCard from "./BlogCard";
-import axios from "axios";
 import { BlogDetails } from "../../types";
 import Spinner from "../Spinner";
-import backendUrl from "../../config";
+import api from "../../api";
 
 const BlogContainer = () => {
   const [blogs, setBlogs] = useState<BlogDetails[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`${backendUrl}/posts/recent`)
+    api
+      .get(`/posts/recent`)
       .then((res) => {
         setBlogs(res.data);
         setLoading(false);
