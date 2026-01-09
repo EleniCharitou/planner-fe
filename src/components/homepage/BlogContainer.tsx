@@ -19,13 +19,17 @@ const BlogContainer = () => {
   }, []);
 
   return (
-    <div className="flex justify-start items-start gap-2 p-1">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto">
       {loading ? (
-        <div className="flex justify-center w-full">
+        <div className="col-span-full flex justify-center py-10">
           <Spinner loading={loading} />
         </div>
       ) : (
-        blogs.slice(0, 3).map((blog) => <BlogCard key={blog.id} blog={blog} />)
+        blogs.slice(0, 3).map((blog) => (
+          <div className="flex justify-center">
+            <BlogCard key={blog.id} blog={blog} />
+          </div>
+        ))
       )}
     </div>
   );

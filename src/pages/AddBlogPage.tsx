@@ -10,15 +10,11 @@ import {
   X,
   Upload,
 } from "lucide-react";
-import { BlogDetails } from "../types";
 import { useAuth } from "../context/AuthContext";
 import estimateReadTime from "../utilities/readTime";
 
 interface AddBlogPageProps {
-  createBlog: (
-    blog: Omit<BlogDetails, "id" | "slug" | "author">,
-    imageFile?: File | null
-  ) => void;
+  createBlog: (blog: FormData) => Promise<void>;
 }
 
 const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
@@ -70,20 +66,16 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+
+    if (picture) {
+      formData.append("picture", picture);
+    }
+
     try {
-      const blogData: Omit<BlogDetails, "id" | "slug" | "author"> = {
-        title: title,
-        content: content,
-        picture: null,
-      };
-
-      if (picture) {
-        // TODO: Upload image to my server/cloud storage
-        // const imageUrl = await uploadImage(picture);
-        // blogData.picture = imageUrl;
-      }
-
-      await createBlog(blogData, picture);
+      await createBlog(formData);
       navigate("/articles");
     } catch (error) {
       console.error("Error creating blog:", error);

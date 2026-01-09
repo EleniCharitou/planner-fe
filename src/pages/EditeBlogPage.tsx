@@ -13,7 +13,7 @@ import Spinner from "../components/Spinner";
 import api from "../api";
 
 interface EditBlogPageProps {
-  editBlog: (blog: FormData, slug: string | undefined) => void;
+  editBlog: (blog: FormData, slug: string | undefined) => Promise<void>;
 }
 
 const EditBlogPage: React.FC<EditBlogPageProps> = ({ editBlog }) => {

@@ -6,8 +6,7 @@ interface BlogCardProps {
   blog: BlogDetails;
 }
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
-  const baseURL = "http://127.0.0.1:8000";
-  const imageUrl = blog.picture ? `${baseURL}${blog.picture}` : undefined;
+  const imageUrl = blog.picture ? `${blog.picture}` : undefined;
 
   return (
     <div className="flex-1 max-w-60 rounded-xl shadow bg-amber-50 flex flex-col">

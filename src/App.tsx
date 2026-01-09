@@ -12,7 +12,6 @@ import PageNotFound from "./pages/PageNotFound";
 import DetailPage from "./pages/DetailPage";
 import EditBlogPage from "./pages/EditeBlogPage";
 import LoginPage from "./new_pages/LoginPage";
-import { BlogDetails } from "./types";
 import { toast } from "react-toastify";
 import NewMainLayout from "./new_pages/NewMainLayout";
 import Homepage from "./new_pages/Homepage";
@@ -22,20 +21,25 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 
 const App = () => {
-  const createBlog = (data: Omit<BlogDetails, "id" | "slug" | "author">) => {
-    api
-      .post(`/posts/`, data)
+  const createBlog = (data: FormData) => {
+    return api
+      .post(`/posts/`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then((res) => {
         toast.success("Blog added successfully!", res);
       })
       .catch((err) => {
         console.error(err.message);
         toast.error("Failed to add blog");
+        throw err;
       });
   };
 
   const editBlog = (data: FormData, slug: string | undefined) => {
-    api
+    return api
       .patch(`/posts/${slug}/`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -47,6 +51,7 @@ const App = () => {
       .catch((err) => {
         console.error(err.message);
         toast.error("Failed to update Article");
+        throw err;
       });
   };
 
