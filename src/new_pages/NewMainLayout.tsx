@@ -90,9 +90,7 @@ function NewMainLayout() {
                 <div className="flex items-center space-x-2">
                   <div className="flex items-center space-x-2 text-white">
                     <User size="18px" />
-                    <span className="text-sm">
-                      {user?.first_name || user?.name || user?.email}
-                    </span>
+                    <span className="text-sm">{user?.name || user?.email}</span>
                   </div>
                   <button
                     onClick={handleLogout}
@@ -184,7 +182,7 @@ function NewMainLayout() {
                     <div className="flex items-center text-white space-x-2 py-2">
                       <User size="18px" />
                       <span className="text-sm">
-                        {user?.first_name || user?.name || user?.email}
+                        {user?.name || user?.email}
                       </span>
                     </div>
                     <button

@@ -37,6 +37,7 @@ export interface AttractionsDetails {
 }
 
 export type Id = string | number;
+
 export interface Column {
   id: Id;
   title: string;
@@ -60,9 +61,8 @@ export interface TripData {
 export interface User {
   id: number;
   email: string;
-  first_name?: string;
-  last_name?: string;
-  name?: string;
+  last_name: string;
+  name: string;
 }
 
 export interface LoginCredentials {
@@ -73,7 +73,7 @@ export interface LoginCredentials {
 export interface RegisterCredentials {
   email: string;
   password: string;
-  first_name: string;
+  name: string;
   last_name: string;
 }
 

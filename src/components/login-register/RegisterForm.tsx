@@ -8,7 +8,7 @@ const RegisterForm: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    first_name: "",
+    name: "",
     last_name: "",
   });
   const [loading, setLoading] = useState(false);
@@ -37,7 +37,7 @@ const RegisterForm: React.FC = () => {
       await register({
         email: registerData.email,
         password: registerData.password,
-        first_name: registerData.first_name,
+        name: registerData.name,
         last_name: registerData.last_name,
       });
 
@@ -83,9 +83,9 @@ const RegisterForm: React.FC = () => {
             </label>
             <input
               type="text"
-              value={registerData.first_name}
+              value={registerData.name}
               onChange={(e) =>
-                setRegisterData({ ...registerData, first_name: e.target.value })
+                setRegisterData({ ...registerData, name: e.target.value })
               }
               onKeyDown={handleKeyDown}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 outline-none text-black"
