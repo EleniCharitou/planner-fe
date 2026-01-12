@@ -34,6 +34,7 @@ export interface AttractionsDetails {
   date: string;
   cost: number;
   visited: boolean;
+  position?: number;
 }
 
 export type Id = string | number;

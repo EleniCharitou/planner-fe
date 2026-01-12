@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AttractionsDetails } from "../types";
 import { useBlockBodyScroll } from "../utilities/useLockBodyScroll";
 import { MapPin } from "lucide-react";
@@ -7,7 +7,7 @@ interface AttractionModalProps {
   isOpen: boolean;
   onClose: () => void;
   attraction: AttractionsDetails | null;
-  onSubmit: (attractionData: AttractionsDetails) => void;
+  onSubmit: (attractionData: Partial<AttractionsDetails>) => Promise<void>;
   columnTitle: string;
 }
 
@@ -17,22 +17,60 @@ const AttractionModal = ({
   attraction,
   onSubmit,
 }: AttractionModalProps) => {
-  const [formData, setFormData] = useState<AttractionsDetails>(
-    attraction ?? {
-      id: "",
-      column_id: "",
-      title: "",
-      location: "",
-      category: "other",
-      mapUrl: "",
-      ticket: "",
-      date: "",
-      cost: 0,
-      visited: false,
-    }
-  );
+  const [formData, setFormData] = useState<Partial<AttractionsDetails>>({
+    id: "",
+    column_id: "",
+    title: "",
+    location: "",
+    category: "other",
+    mapUrl: "",
+    ticket: "",
+    date: "",
+    cost: 0,
+    visited: false,
+  });
 
   useBlockBodyScroll(isOpen);
+
+  useEffect(() => {
+    if (attraction) {
+      let displayDate = "";
+      if (attraction.date) {
+        try {
+          const dateObj = new Date(attraction.date);
+          displayDate = dateObj.toISOString().split("T")[0];
+        } catch (e) {
+          console.error("Error parsing date:", e);
+        }
+      }
+
+      setFormData({
+        id: attraction.id,
+        column_id: attraction.column_id,
+        title: attraction.title,
+        location: attraction.location,
+        category: attraction.category,
+        mapUrl: attraction.mapUrl || "",
+        ticket: attraction.ticket || "",
+        date: displayDate,
+        cost: attraction.cost || 0,
+        visited: attraction.visited || false,
+      });
+    } else {
+      setFormData({
+        id: "",
+        column_id: "",
+        title: "",
+        location: "",
+        category: "other",
+        mapUrl: "",
+        ticket: "",
+        date: "",
+        cost: 0,
+        visited: false,
+      });
+    }
+  }, [attraction]);
 
   const categories = [
     { value: "museum", label: "🏛️ Museum" },
@@ -45,26 +83,58 @@ const AttractionModal = ({
     { value: "other", label: "📍 Other" },
   ];
 
-  const handleSubmit = (e: React.MouseEvent) => {
+  const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
+
     if (!formData.title || !formData.location) {
       alert("Please fill in the attraction name and location");
       return;
     }
-    onSubmit(formData);
-    setFormData({
-      id: "",
-      column_id: "",
-      title: "",
-      location: "",
-      category: "other",
-      mapUrl: "",
-      ticket: "",
-      date: "",
-      cost: 0,
-      visited: false,
-    });
-    onClose();
+
+    let formattedDate: string | undefined = undefined;
+    if (formData.date && formData.date.trim() !== "") {
+      const dateObj = new Date(formData.date);
+      formattedDate = dateObj.toISOString();
+    }
+
+    const submitData: any = {
+      title: formData.title.trim(),
+      location: formData.location.trim(),
+      category: formData.category || "other",
+      mapUrl: formData.mapUrl?.trim() || "",
+      ticket: formData.ticket?.trim() || "",
+      cost: formData.cost ? String(Number(formData.cost).toFixed(2)) : "0.00",
+      visited: Boolean(formData.visited),
+    };
+
+    if (formattedDate) {
+      submitData.date = formattedDate;
+    }
+
+    if (attraction) {
+      submitData.id = formData.id;
+      submitData.column_id = formData.column_id;
+    }
+
+    try {
+      await onSubmit(submitData);
+
+      setFormData({
+        id: "",
+        column_id: "",
+        title: "",
+        location: "",
+        category: "other",
+        mapUrl: "",
+        ticket: "",
+        date: "",
+        cost: 0,
+        visited: false,
+      });
+      onClose();
+    } catch (error) {
+      console.error("Error submitting attraction:", error);
+    }
   };
 
   const handleChange = (
@@ -91,7 +161,7 @@ const AttractionModal = ({
       <div className="bg-amber-50 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
         <div className="bg-teal-500 p-6 rounded-t-2xl flex-shrink-0">
           <h2 className="text-2xl font-bold text-white text-center">
-            ✨ Attraction
+            {attraction ? "✏️ Edit Attraction" : "✨ New Attraction"}
           </h2>
         </div>
 
@@ -105,10 +175,11 @@ const AttractionModal = ({
               <input
                 type="text"
                 name="title"
-                value={formData.title ?? ""}
+                value={formData.title || ""}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus-visible:border-transparent"
                 placeholder="e.g., Eiffel Tower"
+                required
               />
             </div>
 
@@ -119,10 +190,11 @@ const AttractionModal = ({
               <input
                 type="text"
                 name="location"
-                value={formData.location ?? ""}
+                value={formData.location || ""}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-transparent"
                 placeholder="e.g., Paris, France"
+                required
               />
             </div>
 
@@ -132,7 +204,7 @@ const AttractionModal = ({
               </label>
               <select
                 name="category"
-                value={formData.category}
+                value={formData.category || "other"}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-transparent"
               >
@@ -151,10 +223,14 @@ const AttractionModal = ({
               <input
                 type="number"
                 name="cost"
-                value={formData.cost}
+                value={
+                  typeof formData.cost === "string"
+                    ? parseFloat(formData.cost) || 0
+                    : formData.cost || 0
+                }
                 onChange={handleChange}
                 min={0}
-                step={1}
+                step={0.01}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-transparent"
                 placeholder="0.00"
               />
@@ -168,9 +244,9 @@ const AttractionModal = ({
             <input
               type="url"
               name="mapUrl"
-              value={formData.mapUrl ?? ""}
+              value={formData.mapUrl || ""}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1  focus:ring-teal-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-transparent"
               placeholder="https://maps.google.com/..."
             />
           </div>
@@ -182,7 +258,7 @@ const AttractionModal = ({
             <input
               type="url"
               name="ticket"
-              value={formData.ticket ?? ""}
+              value={formData.ticket || ""}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-transparent"
               placeholder="https://tickets.example.com/..."
@@ -217,7 +293,7 @@ const AttractionModal = ({
             onClick={handleSubmit}
             className="flex-1 min-w-[120px] max-w-full px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-semibold shadow-lg hover:from-teal-600 hover:to-teal-800 hover:cursor-pointer transition-all duration-300"
           >
-            Save Changes
+            {attraction ? "Update Attraction" : "Create Attraction"}
           </button>
         </div>
       </div>

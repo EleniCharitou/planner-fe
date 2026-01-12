@@ -155,7 +155,7 @@ const TripModal: React.FC<TripModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-gradient-to-br from-amber-100 via-teal-500">
-      <div className="bg-amber-50 rounded-lg shadow-xl text-black p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-amber-50 rounded-lg shadow-xl text-black p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto text-left">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">
             Plan Your Trip
