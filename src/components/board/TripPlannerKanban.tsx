@@ -145,14 +145,10 @@ export default function TripPlannerKanban() {
   };
 
   const handleDeleteAttraction = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this attraction?")) {
-      try {
-        await api.delete(`/attraction/${id}/`);
-        deleteAttraction(id);
-      } catch (error) {
-        console.error("Error deleting attraction:", error);
-        alert("Failed to delete attraction");
-      }
+    try {
+      await deleteAttraction(id);
+    } catch (error) {
+      console.error("Error deleting attraction:", error);
     }
   };
 

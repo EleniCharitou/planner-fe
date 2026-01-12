@@ -72,7 +72,8 @@ export const useAttractions = (initialAttractions: AttractionsDetails[]) => {
   };
 
   const deleteAttraction = async (id: string) => {
-    if (!window.confirm("Are you sure?")) return;
+    if (!window.confirm("Are you sure you want to delete this attraction?"))
+      return;
     try {
       await saveAttraction("delete", { id });
       setAttractions((prev) =>
