@@ -95,7 +95,11 @@ const App = () => {
         <Route path="/blogs/:slug" element={<DetailPage />} />
         <Route
           path="/blogs/edit/:slug"
-          element={<EditBlogPage editBlog={editBlog} />}
+          element={
+            <ProtectedRoute>
+              <EditBlogPage editBlog={editBlog} />
+            </ProtectedRoute>
+          }
         />
         <Route path="/login" element={<LoginPage initialView="login" />} />
         <Route
@@ -104,7 +108,16 @@ const App = () => {
         />
         <Route path="*" element={<PageNotFound />} />
       </Route>
-    )
+    ),
+    {
+      future: {
+        v7_relativeSplatPath: true,
+        v7_fetcherPersist: true,
+        v7_normalizeFormMethod: true,
+        v7_partialHydration: true,
+        v7_skipActionErrorRevalidation: true,
+      },
+    }
   );
   return (
     <AuthProvider>

@@ -26,8 +26,8 @@ const BlogContainer = () => {
         </div>
       ) : (
         blogs.slice(0, 3).map((blog) => (
-          <div className="flex justify-center">
-            <BlogCard key={blog.id} blog={blog} />
+          <div key={blog.id} className="flex justify-center">
+            <BlogCard blog={blog} />
           </div>
         ))
       )}
