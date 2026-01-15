@@ -19,8 +19,10 @@ interface UseDragAndDropProps {
     activeId: string,
     newColumnId: string,
     overIndex?: number
-  ) => void;
-  onReorderEnd?: (latestAttractions: AttractionsDetails[]) => void;
+  ) => void | Promise<void>;
+  onReorderEnd?: (
+    latestAttractions: AttractionsDetails[]
+  ) => void | Promise<void>;
 }
 
 export const useDragAndDrop = ({
@@ -93,7 +95,7 @@ export const useDragAndDrop = ({
     }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setIsDragging(false);
     setActiveId(null);
@@ -118,9 +120,7 @@ export const useDragAndDrop = ({
     }
 
     if (onReorderEnd) {
-      setTimeout(() => {
-        onReorderEnd(attractions);
-      }, 0);
+      await onReorderEnd(attractions);
     }
   };
 

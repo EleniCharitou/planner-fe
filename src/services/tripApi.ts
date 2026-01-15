@@ -55,3 +55,22 @@ export const deleteTrip = async (id: number): Promise<void> => {
     throw error;
   }
 };
+
+export const getFullTripDetails = async (tripId: number) => {
+  try {
+    const response = await api.get(`/grouped_attractions/?trip_id=${tripId}`);
+    const data = response.data;
+
+    return {
+      columns: data.map((col: any) => ({
+        id: col.id,
+        title: col.title,
+        trip_id: col.trip_id,
+      })),
+      attractions: data.flatMap((column: any) => column.cards),
+    };
+  } catch (error) {
+    console.error("Error fetching full trip details:", error);
+    throw error;
+  }
+};

@@ -4,7 +4,11 @@ import { useAttractions } from "./boardHooks/useAttractions";
 import { useDragAndDrop } from "./boardHooks/useDragDrop";
 import { KanbanBoard } from "./KanbanBoard";
 import AttractionModal from "../AttractionModal";
-import { deleteTrip, getUserTrips } from "../../services/tripApi";
+import {
+  deleteTrip,
+  getFullTripDetails,
+  getUserTrips,
+} from "../../services/tripApi";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api";
 import { MapPin, Plus } from "lucide-react";
@@ -22,7 +26,6 @@ export default function TripPlannerKanban() {
     useState<AttractionsDetails | null>(null);
   const [isCreatingAttraction, setIsCreatingAttraction] = useState(false);
   const [creatingColumnId, setCreatingColumnId] = useState<string>("");
-  const [selectedColumnTitle, setSelectedColumnTitle] = useState<string>("");
   const [isCreateTripModalOpen, setIsCreateTripModalOpen] = useState(false);
 
   const {
@@ -90,25 +93,13 @@ export default function TripPlannerKanban() {
 
     const fetchTripData = async () => {
       try {
-        const columnsResponse = await api.get(
-          `/column/?trip_id=${selectedTripId}`
-        );
-        setColumns(columnsResponse.data);
+        const { columns: fetchedColumns, attractions: fetchedAttractions } =
+          await getFullTripDetails(selectedTripId);
 
-        const attractionsResponse = await api.get(
-          `/grouped_attractions/?trip_id=${selectedTripId}`
-        );
-
-        const flatAttractions: AttractionsDetails[] = [];
-        attractionsResponse.data.forEach((column: ColumnData) => {
-          column.cards.forEach((card) => {
-            flatAttractions.push(card);
-          });
-        });
-
-        setInitialAttractions(flatAttractions);
+        setColumns(fetchedColumns);
+        setInitialAttractions(fetchedAttractions);
       } catch (error) {
-        console.error("Error fetching trip data:", error);
+        console.error("Fail to load this trip:", error);
       }
     };
 
@@ -140,8 +131,6 @@ export default function TripPlannerKanban() {
     if (!attraction) return;
 
     setEditingAttraction(attraction);
-    const column = columns.find((c) => c.id === attraction.column_id);
-    setSelectedColumnTitle(column ? column.title : "");
   };
 
   const handleDeleteAttraction = async (id: string) => {
@@ -153,9 +142,7 @@ export default function TripPlannerKanban() {
   };
 
   const handleAddAttraction = (columnId: string) => {
-    const column = columns.find((c) => c.id === columnId);
     setCreatingColumnId(columnId);
-    setSelectedColumnTitle(column ? column.title : "");
     setIsCreatingAttraction(true);
   };
 
@@ -169,13 +156,14 @@ export default function TripPlannerKanban() {
         formattedDate = dateObj.toISOString();
       }
 
-      const attractionData: any = {
+      const attractionData: Omit<AttractionsDetails, "id"> = {
         title: newAttraction.title || "",
         location: newAttraction.location || "",
         category: newAttraction.category || "other",
         mapUrl: newAttraction.mapUrl || "",
         ticket: newAttraction.ticket || "",
-        cost: newAttraction.cost ? String(newAttraction.cost) : "0.00",
+        date: newAttraction.date || "",
+        cost: Number(newAttraction.cost) || 0,
         visited: newAttraction.visited || false,
         column_id: creatingColumnId,
       };
@@ -183,22 +171,16 @@ export default function TripPlannerKanban() {
       if (formattedDate) {
         attractionData.date = formattedDate;
       }
-      const response = await api.post("/attraction/", attractionData);
+      const response = await api.post<AttractionsDetails>(
+        "/attraction/",
+        attractionData
+      );
 
       setInitialAttractions([...attractions, response.data]);
       setIsCreatingAttraction(false);
-      setCreatingColumnId("");
-      setSelectedColumnTitle("");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating attraction:", error);
-      console.error("Error response:", error.response?.data);
-      alert(
-        `Failed to create attraction: ${
-          error.response?.data?.detail ||
-          error.response?.data?.message ||
-          error.message
-        }`
-      );
+      alert("Failed to create attraction. Please try again.");
     }
   };
 
@@ -216,9 +198,9 @@ export default function TripPlannerKanban() {
         formattedDate = undefined;
       }
 
-      const updateData: any = {
+      const updateData: Partial<AttractionsDetails> = {
         ...updatedAttraction,
-        cost: updatedAttraction.cost ? String(updatedAttraction.cost) : "0.00",
+        cost: Number(updatedAttraction.cost) || 0,
       };
 
       if (formattedDate) {
@@ -233,18 +215,10 @@ export default function TripPlannerKanban() {
         ...updatedAttraction,
       } as AttractionsDetails);
       setEditingAttraction(null);
-      setSelectedColumnTitle("");
-    } catch (error: any) {
-      console.error("Error updating attraction:", error);
-      console.error("Error response:", error.response?.data);
-      alert(
-        `Failed to update attraction: ${
-          error.response?.data?.detail ||
-          error.response?.data?.message ||
-          error.message
-        }`
-      );
-      throw error;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      console.error("Error updating attraction:", message);
+      alert(`Failed to update attraction: ${message}`);
     }
   };
 
@@ -319,6 +293,39 @@ export default function TripPlannerKanban() {
     );
   }
 
+  let boardContent;
+
+  if (!selectedTripId) {
+    boardContent = (
+      <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+        <p className="text-gray-600">
+          Please select a trip to view and manage its plan.
+        </p>
+      </div>
+    );
+  } else if (columns.length === 0) {
+    boardContent = (
+      <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+        <p className="text-gray-600 mb-4">
+          No columns found for this trip. Create columns to start organizing
+          your attractions.
+        </p>
+      </div>
+    );
+  } else {
+    boardContent = (
+      <KanbanBoard
+        columns={columns}
+        attractions={attractions}
+        getAttractionsByColumn={getAttractionsByColumn}
+        onEdit={handleEdit}
+        onDelete={handleDeleteAttraction}
+        onAddAttraction={handleAddAttraction}
+        dragHandlers={dragHandlers}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-teal-300 to-teal-600">
       <div className="p-6">
@@ -330,32 +337,7 @@ export default function TripPlannerKanban() {
           onTripDelete={handleDeleteTrip}
         />
 
-        {selectedTripId ? (
-          columns.length > 0 ? (
-            <KanbanBoard
-              columns={columns}
-              attractions={attractions}
-              getAttractionsByColumn={getAttractionsByColumn}
-              onEdit={handleEdit}
-              onDelete={handleDeleteAttraction}
-              onAddAttraction={handleAddAttraction}
-              dragHandlers={dragHandlers}
-            />
-          ) : (
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <p className="text-gray-600 mb-4">
-                No columns found for this trip. Create columns to start
-                organizing your attractions.
-              </p>
-            </div>
-          )
-        ) : (
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <p className="text-gray-600">
-              Please select a trip to view its plan
-            </p>
-          </div>
-        )}
+        <div className="mt-6">{boardContent}</div>
       </div>
 
       {editingAttraction && (
@@ -365,9 +347,7 @@ export default function TripPlannerKanban() {
           onSubmit={handleUpdateAttraction}
           onClose={() => {
             setEditingAttraction(null);
-            setSelectedColumnTitle("");
           }}
-          columnTitle={selectedColumnTitle}
         />
       )}
 
@@ -379,9 +359,7 @@ export default function TripPlannerKanban() {
           onClose={() => {
             setIsCreatingAttraction(false);
             setCreatingColumnId("");
-            setSelectedColumnTitle("");
           }}
-          columnTitle={selectedColumnTitle}
         />
       )}
     </div>
