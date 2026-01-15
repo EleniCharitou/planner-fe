@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BlogDetails } from "../types";
 import Spinner from "../components/Spinner";
 import { BookOpen } from "lucide-react";
@@ -57,12 +57,11 @@ const DetailPage = () => {
     }
   };
 
-  const handleShareClick = () => {
+  const handleShareClick = useCallback(() => {
     if (article) {
-      setArticle(article);
       shareArticle(article);
     }
-  };
+  }, [article, shareArticle]);
 
   const isAuthor = article
     ? String(user?.id) === String(article.author)
