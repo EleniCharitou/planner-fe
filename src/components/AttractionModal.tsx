@@ -8,7 +8,6 @@ interface AttractionModalProps {
   onClose: () => void;
   attraction: AttractionsDetails | null;
   onSubmit: (attractionData: Partial<AttractionsDetails>) => Promise<void>;
-  columnTitle: string;
 }
 
 const AttractionModal = ({
@@ -97,13 +96,13 @@ const AttractionModal = ({
       formattedDate = dateObj.toISOString();
     }
 
-    const submitData: any = {
+    const submitData: Partial<AttractionsDetails> = {
       title: formData.title.trim(),
       location: formData.location.trim(),
       category: formData.category || "other",
       mapUrl: formData.mapUrl?.trim() || "",
       ticket: formData.ticket?.trim() || "",
-      cost: formData.cost ? String(Number(formData.cost).toFixed(2)) : "0.00",
+      cost: formData.cost ? Number(Number(formData.cost).toFixed(2)) : 0,
       visited: Boolean(formData.visited),
     };
 
@@ -141,17 +140,18 @@ const AttractionModal = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "category"
-          ? (value as AttractionsDetails["category"])
-          : type === "checkbox"
-          ? (e.target as HTMLInputElement).checked
-          : type === "number"
-          ? parseFloat(value) || 0
-          : value,
-    }));
+
+    let finalValue: string | number | boolean = value;
+
+    if (name === "category") {
+      finalValue = value as AttractionsDetails["category"];
+    } else if (type === "checkbox") {
+      finalValue = (e.target as HTMLInputElement).checked;
+    } else if (type === "number") {
+      finalValue = Number.parseFloat(value) || 0;
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: finalValue }));
   };
 
   if (!isOpen) return null;
@@ -169,10 +169,14 @@ const AttractionModal = ({
         <div className="p-6 text-black space-y-6 overflow-y-auto flex-1 max-h-[calc(90vh-120px)]">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="attraction-name"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 🎯 Attraction Name *
               </label>
               <input
+                id="attraction-name"
                 type="text"
                 name="title"
                 value={formData.title || ""}
@@ -184,10 +188,14 @@ const AttractionModal = ({
             </div>
 
             <div>
-              <label className="inline-flex items-center text-sm font-semibold text-gray-700 mb-2 gap-1.5">
+              <label
+                htmlFor="location"
+                className="inline-flex items-center text-sm font-semibold text-gray-700 mb-2 gap-1.5"
+              >
                 <MapPin className="w-4 h-4 text-orange-500" /> Location *
               </label>
               <input
+                id="location"
                 type="text"
                 name="location"
                 value={formData.location || ""}
@@ -199,10 +207,14 @@ const AttractionModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="category"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 🏷️ Category
               </label>
               <select
+                id="category"
                 name="category"
                 value={formData.category || "other"}
                 onChange={handleChange}
@@ -217,15 +229,19 @@ const AttractionModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="cost"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 💰 Estimated Cost (€)
               </label>
               <input
+                id="cost"
                 type="number"
                 name="cost"
                 value={
                   typeof formData.cost === "string"
-                    ? parseFloat(formData.cost) || 0
+                    ? Number.parseFloat(formData.cost) || 0
                     : formData.cost || 0
                 }
                 onChange={handleChange}
@@ -238,10 +254,14 @@ const AttractionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label
+              htmlFor="mapUrl"
+              className="block text-sm font-semibold text-gray-700 mb-2"
+            >
               🗺️ Map URL (Optional)
             </label>
             <input
+              id="mapUrl"
               type="url"
               name="mapUrl"
               value={formData.mapUrl || ""}
@@ -252,10 +272,14 @@ const AttractionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label
+              htmlFor="ticket"
+              className="block text-sm font-semibold text-gray-700 mb-2"
+            >
               🎫 Ticket URL (Optional)
             </label>
             <input
+              id="ticket"
               type="url"
               name="ticket"
               value={formData.ticket || ""}
