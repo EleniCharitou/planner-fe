@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import backendUrl from "../config";
 import { RegisterCredentials, User } from "../types";
 
@@ -56,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       // Get token
       const response = await fetch(`${backendUrl}/users/login`, {
@@ -94,49 +101,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Login error:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const register = async (userData: RegisterCredentials) => {
-    try {
-      const response = await fetch(`${backendUrl}/users/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
+  const register = useCallback(
+    async (userData: RegisterCredentials) => {
+      try {
+        const response = await fetch(`${backendUrl}/users/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Registration failed");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || "Registration failed");
+        }
+
+        // Auto-login after registration
+        await login(userData.email, userData.password);
+      } catch (error) {
+        console.error("Registration error:", error);
+        throw error;
       }
+    },
+    [login],
+  );
 
-      // Auto-login after registration
-      await login(userData.email, userData.password);
-    } catch (error) {
-      console.error("Registration error:", error);
-      throw error;
-    }
-  };
-
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      user,
+      token,
+      isAuthenticated: !!token,
+      isLoading,
+      login,
+      logout,
+      register,
+    }),
+    [user, token, isLoading, login, logout, register],
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        isAuthenticated: !!token,
-        isLoading,
-        login,
-        logout,
-        register,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
