@@ -39,18 +39,16 @@ export default function TripPlannerKanban() {
     saveAttraction,
   } = useAttractions([]);
 
+  const handlePersistMove = async (id: string, colId: string, pos: number) => {
+    await saveAttraction("move", { id, column_id: colId, position: pos });
+  };
+
   const dragHandlers = useDragAndDrop({
     attractions,
     columns,
     moveAttraction,
     moveAttractionToColumn,
-    onReorderEnd: async () => {
-      try {
-        await saveAttraction("reorder", attractions);
-      } catch (error) {
-        console.error("Error saving reorder:", error);
-      }
-    },
+    onPersistMove: handlePersistMove,
   });
 
   useEffect(() => {
@@ -147,7 +145,7 @@ export default function TripPlannerKanban() {
   };
 
   const handleCreateAttraction = async (
-    newAttraction: Partial<AttractionsDetails>
+    newAttraction: Partial<AttractionsDetails>,
   ) => {
     try {
       let formattedDate: string | undefined = undefined;
@@ -173,7 +171,7 @@ export default function TripPlannerKanban() {
       }
       const response = await api.post<AttractionsDetails>(
         "/attraction/",
-        attractionData
+        attractionData,
       );
 
       setInitialAttractions([...attractions, response.data]);
@@ -185,7 +183,7 @@ export default function TripPlannerKanban() {
   };
 
   const handleUpdateAttraction = async (
-    updatedAttraction: Partial<AttractionsDetails>
+    updatedAttraction: Partial<AttractionsDetails>,
   ) => {
     try {
       let formattedDate: string | undefined = updatedAttraction.date;

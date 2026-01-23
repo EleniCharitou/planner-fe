@@ -17,13 +17,9 @@ export const useAttractions = (initialAttractions: AttractionsDetails[]) => {
 
   const saveAttraction = async (
     action: AttractionAction,
-    data: any
+    data: any,
   ): Promise<void> => {
     switch (action) {
-      case "reorder":
-        await api.patch("/attraction/reorder/", data);
-        break;
-
       case "move":
         if (data.id) {
           await api.patch(`/attraction/${data.id}/move/`, {
@@ -62,8 +58,8 @@ export const useAttractions = (initialAttractions: AttractionsDetails[]) => {
         prev.map((attr) =>
           String(attr.id) === String(updatedAttraction.id)
             ? updatedAttraction
-            : attr
-        )
+            : attr,
+        ),
       );
     } catch (err) {
       console.error("Update failed", err);
@@ -72,12 +68,12 @@ export const useAttractions = (initialAttractions: AttractionsDetails[]) => {
   };
 
   const deleteAttraction = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this attraction?"))
+    if (!globalThis.confirm("Are you sure you want to delete this attraction?"))
       return;
     try {
       await saveAttraction("delete", { id });
       setAttractions((prev) =>
-        prev.filter((attr) => String(attr.id) !== String(id))
+        prev.filter((attr) => String(attr.id) !== String(id)),
       );
     } catch (err) {
       console.error("Delete failed", err);
@@ -85,51 +81,52 @@ export const useAttractions = (initialAttractions: AttractionsDetails[]) => {
     }
   };
 
-  const moveAttractionToColumn = async (
+  const moveAttractionToColumn = (
     attractionId: string,
     newColumnId: string,
-    overIndex?: number
+    overIndex?: number,
   ) => {
-    const attraction = attractions.find(
-      (a) => String(a.id) === String(attractionId)
-    );
-    if (!attraction) return;
-
     setAttractions((prev) => {
-      const updatedAttraction = { ...attraction, column_id: newColumnId };
+      const activeIndex = prev.findIndex(
+        (a) => String(a.id) === String(attractionId),
+      );
+      if (activeIndex === -1) return prev;
 
-      // Remove from current position
-      const withoutMoved = prev.filter(
-        (a) => String(a.id) !== String(attractionId)
+      const currentAttr = prev[activeIndex];
+      const isSameColumn =
+        String(currentAttr.column_id) === String(newColumnId);
+
+      // If it's already in that column and we don't have a specific overIndex, do nothing
+      if (isSameColumn && overIndex === undefined) {
+        return prev;
+      }
+
+      const newItems = [...prev];
+      const [movedItem] = newItems.splice(activeIndex, 1);
+      const updatedItem = { ...movedItem, column_id: newColumnId };
+
+      const targetColItems = newItems.filter(
+        (a) => String(a.column_id) === String(newColumnId),
       );
 
-      // Get attractions in target column
-      const columnAttractions = withoutMoved.filter(
-        (a) => String(a.column_id) === String(newColumnId)
-      );
+      let finalInsertIndex: number;
 
-      // Insert at position or end
-      const insertIndex =
-        overIndex !== undefined && overIndex >= 0
-          ? Math.min(overIndex, columnAttractions.length)
-          : columnAttractions.length;
+      if (overIndex !== undefined) {
+        finalInsertIndex = newItems.indexOf(targetColItems[overIndex]);
+      } else {
+        const lastItem = targetColItems.at(-1);
+        finalInsertIndex = lastItem
+          ? newItems.indexOf(lastItem) + 1
+          : newItems.length;
+      }
 
-      columnAttractions.splice(insertIndex, 0, updatedAttraction);
+      // Safety check. If indexOf returned -1, default to end of array
+      const verifiedIndex =
+        finalInsertIndex === -1 ? newItems.length : finalInsertIndex;
 
-      // Combine with other columns
-      const otherAttractions = withoutMoved.filter(
-        (a) => String(a.column_id) !== String(newColumnId)
-      );
-
-      return [...otherAttractions, ...columnAttractions];
+      newItems.splice(verifiedIndex, 0, updatedItem);
+      return newItems;
     });
-
-    try {
-      const updatedData = { ...attraction, column_id: newColumnId };
-      await saveAttraction("update", updatedData);
-    } catch (err) {
-      console.error("Move to column failed", err);
-    }
   };
 
   const moveAttraction = (activeId: string, overId: string) => {
@@ -146,14 +143,14 @@ export const useAttractions = (initialAttractions: AttractionsDetails[]) => {
       if (activeColumnId !== overColumnId) return prev;
 
       const columnAttractions = prev.filter(
-        (a) => String(a.column_id) === activeColumnId
+        (a) => String(a.column_id) === activeColumnId,
       );
 
       const activeIndex = columnAttractions.findIndex(
-        (a) => String(a.id) === String(activeId)
+        (a) => String(a.id) === String(activeId),
       );
       const overIndex = columnAttractions.findIndex(
-        (a) => String(a.id) === String(overId)
+        (a) => String(a.id) === String(overId),
       );
 
       if (activeIndex === -1 || overIndex === -1) return prev;
@@ -169,11 +166,27 @@ export const useAttractions = (initialAttractions: AttractionsDetails[]) => {
       }));
 
       const otherAttractions = prev.filter(
-        (a) => String(a.column_id) !== activeColumnId
+        (a) => String(a.column_id) !== activeColumnId,
       );
 
       return [...otherAttractions, ...normalizedColumn];
     });
+  };
+
+  const persistAttractionMove = async (
+    attractionId: string,
+    columnId: string,
+    position: number,
+  ) => {
+    try {
+      await saveAttraction("move", {
+        id: attractionId,
+        column_id: columnId,
+        position: position,
+      });
+    } catch (err) {
+      console.error("Failed to sync move to server:", err);
+    }
   };
 
   const getAttractionsByColumn = (columnId: string) => {
@@ -192,6 +205,7 @@ export const useAttractions = (initialAttractions: AttractionsDetails[]) => {
     deleteAttraction,
     moveAttraction,
     moveAttractionToColumn,
+    persistAttractionMove,
     getAttractionsByColumn,
   };
 };

@@ -18,11 +18,13 @@ interface UseDragAndDropProps {
   moveAttractionToColumn: (
     activeId: string,
     newColumnId: string,
-    overIndex?: number
+    overIndex?: number,
   ) => void | Promise<void>;
-  onReorderEnd?: (
-    latestAttractions: AttractionsDetails[]
-  ) => void | Promise<void>;
+  onPersistMove: (
+    attractionId: string,
+    columnId: string,
+    position: number,
+  ) => Promise<void> | void;
 }
 
 export const useDragAndDrop = ({
@@ -30,20 +32,16 @@ export const useDragAndDrop = ({
   columns,
   moveAttraction,
   moveAttractionToColumn,
-  onReorderEnd,
+  onPersistMove,
 }: UseDragAndDropProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -65,37 +63,35 @@ export const useDragAndDrop = ({
     if (!activeAttraction) return;
 
     const overAttraction = attractions.find((a) => String(a.id) === overId);
-    const overColumn = columns.find((c) => String(c.id) === overId);
+    const overCol = columns.find((c) => String(c.id) === overId);
 
-    // Case 1: Dragging over another attraction
+    if (!overAttraction && !overCol) return;
+
+    // If hovering over another card
     if (overAttraction) {
-      const activeColumnId = String(activeAttraction.column_id);
-      const overColumnId = String(overAttraction.column_id);
+      const activeColId = String(activeAttraction.column_id);
+      const overColId = String(overAttraction.column_id);
 
-      // Moving to a different column
-      if (activeColumnId !== overColumnId) {
-        const columnAttractions = attractions.filter(
-          (a) => String(a.column_id) === overColumnId
+      if (activeColId !== overColId) {
+        const colAttrs = attractions.filter(
+          (a) => String(a.column_id) === overColId,
         );
-        const overIndex = columnAttractions.findIndex(
-          (a) => String(a.id) === overId
-        );
-
-        moveAttractionToColumn(activeId, overColumnId, overIndex);
+        const overIndex = colAttrs.findIndex((a) => String(a.id) === overId);
+        moveAttractionToColumn(activeId, overColId, overIndex);
       }
     }
-    // Case 2: Dragging over an empty column or column header
-    else if (overColumn) {
-      const activeColumnId = String(activeAttraction.column_id);
-      const overColumnId = String(overColumn.id);
+    // If hovering over an empty column area
+    else if (overCol) {
+      const activeColId = String(activeAttraction.column_id);
+      const overColId = String(overCol.id);
 
-      if (activeColumnId !== overColumnId) {
-        moveAttractionToColumn(activeId, overColumnId);
+      if (activeColId !== overColId) {
+        moveAttractionToColumn(activeId, overColId);
       }
     }
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setIsDragging(false);
     setActiveId(null);
@@ -105,32 +101,53 @@ export const useDragAndDrop = ({
     const activeId = String(active.id);
     const overId = String(over.id);
 
-    if (activeId === overId) return;
-
     const activeAttraction = attractions.find((a) => String(a.id) === activeId);
-    const overAttraction = attractions.find((a) => String(a.id) === overId);
-
     if (!activeAttraction) return;
 
+    const currentColumnId = String(activeAttraction.column_id);
+
+    const overAttr = attractions.find((a) => String(a.id) === overId);
     if (
-      overAttraction &&
-      String(activeAttraction.column_id) === String(overAttraction.column_id)
+      overAttr &&
+      String(activeAttraction.column_id) === String(overAttr.column_id)
     ) {
       moveAttraction(activeId, overId);
     }
 
-    if (onReorderEnd) {
-      await onReorderEnd(attractions);
+    // --- BACKEND PERSISTENCE ---
+    // Get all items in this column
+    const attractionsInCol = attractions.filter(
+      (a) => String(a.column_id) === currentColumnId,
+    );
+    // Calculate the NEW intended position
+    let finalPosition = -1;
+
+    if (
+      overAttr &&
+      String(activeAttraction.column_id) === String(overAttr.column_id)
+    ) {
+      // Same column
+      finalPosition = attractionsInCol.findIndex(
+        (a) => String(a.id) === overId,
+      );
+    } else {
+      // Different column or dropped in empty space: position is index of active card
+      finalPosition = attractionsInCol.findIndex(
+        (a) => String(a.id) === activeId,
+      );
+    }
+
+    // Update Backend
+    if (finalPosition !== -1) {
+      onPersistMove(activeId, currentColumnId, finalPosition);
     }
   };
-
-  const activeAttraction = attractions.find((a) => String(a.id) === activeId);
 
   return {
     sensors,
     activeId,
     isDragging,
-    activeAttraction,
+    activeAttraction: attractions.find((a) => String(a.id) === activeId),
     handleDragStart,
     handleDragOver,
     handleDragEnd,
