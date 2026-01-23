@@ -8,7 +8,7 @@ interface TripSelectorProps {
   selectedTripId: number | null;
   onTripSelect: (tripId: number) => void;
   onCreateTrip: () => void;
-  onTripDelete: (tripId: number) => void;
+  onTripDelete: (tripId: number) => Promise<void> | void;
 }
 
 export const TripSelector: React.FC<TripSelectorProps> = ({
@@ -28,7 +28,7 @@ export const TripSelector: React.FC<TripSelectorProps> = ({
 
     const confirmMessage = `Are you sure you want to delete the trip to "${selectedTrip.destination}"? This action cannot be undone.`;
 
-    if (!window.confirm(confirmMessage)) {
+    if (!globalThis.confirm(confirmMessage)) {
       return;
     }
 

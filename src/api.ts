@@ -21,7 +21,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor to handle errors globally
@@ -33,7 +33,7 @@ api.interceptors.response.use(
     if (error.response) {
       if (error.response.status === 401) {
         localStorage.removeItem("token");
-        window.location.href = "/login";
+        globalThis.location.href = "/login";
       }
 
       if (error.response.status === 403) {
@@ -46,7 +46,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

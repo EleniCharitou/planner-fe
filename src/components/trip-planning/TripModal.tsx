@@ -44,7 +44,10 @@ const TripModal: React.FC<TripModalProps> = ({
   const addMember = () => {
     setTripData({
       ...tripData,
-      trip_members: [...tripData.trip_members, { name: "", email: "" }],
+      trip_members: [
+        ...tripData.trip_members,
+        { id: crypto.randomUUID(), name: "", email: "" },
+      ],
     });
   };
 
@@ -144,7 +147,7 @@ const TripModal: React.FC<TripModalProps> = ({
       setApiError(
         error.response?.data?.detail ||
           error.message ||
-          "Failed to create trip. Please try again."
+          "Failed to create trip. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -176,10 +179,14 @@ const TripModal: React.FC<TripModalProps> = ({
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="destination"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Destination *
             </label>
             <input
+              id="destination"
               type="text"
               required
               value={tripData.destination}
@@ -197,54 +204,69 @@ const TripModal: React.FC<TripModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <span className="block text-sm font-medium text-gray-700 mb-2">
               Trip Members *
-            </label>
-            {tripData.trip_members.map((member, index) => (
-              <div key={index} className="flex gap-2 mb-2">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    value={member.name}
-                    onChange={(e) =>
-                      updateMember(index, "name", e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    placeholder="Name"
-                  />
-                  {fieldErrors.trip_members?.[index]?.name && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {fieldErrors.trip_members[index].name}
-                    </p>
+            </span>
+            {tripData.trip_members.map((member, index) => {
+              const nameInputId = `member-name-${member.id}`;
+              const emailInputId = `member-email-${member.id}`;
+
+              return (
+                <div key={member.id} className="flex gap-2 mb-2">
+                  <div className="flex-1">
+                    <label htmlFor={nameInputId} className="sr-only">
+                      Name
+                    </label>
+                    <input
+                      id={nameInputId}
+                      type="text"
+                      value={member.name}
+                      onChange={(e) =>
+                        updateMember(index, "name", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      placeholder="Name"
+                    />
+                    {fieldErrors.trip_members?.[index]?.name && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {fieldErrors.trip_members[index].name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex-1">
+                    <label htmlFor={emailInputId} className="sr-only">
+                      Email
+                    </label>
+                    <input
+                      id={emailInputId}
+                      type="email"
+                      value={member.email}
+                      onChange={(e) =>
+                        updateMember(index, "email", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      placeholder="Email"
+                    />
+                    {fieldErrors.trip_members?.[index]?.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {fieldErrors.trip_members[index].email}
+                      </p>
+                    )}
+                  </div>
+                  {tripData.trip_members.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeMember(index)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                      aria-label={`Remove member ${member.name || index + 1}`}
+                    >
+                      <X size={20} />
+                    </button>
                   )}
                 </div>
-                <div className="flex-1">
-                  <input
-                    type="email"
-                    value={member.email}
-                    onChange={(e) =>
-                      updateMember(index, "email", e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    placeholder="Email"
-                  />
-                  {fieldErrors.trip_members?.[index]?.email && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {fieldErrors.trip_members[index].email}
-                    </p>
-                  )}
-                </div>
-                {tripData.trip_members.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeMember(index)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                  >
-                    <X size={20} />
-                  </button>
-                )}
-              </div>
-            ))}
+              );
+            })}
             <button
               type="button"
               onClick={addMember}
@@ -257,10 +279,14 @@ const TripModal: React.FC<TripModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="start-date"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Start Date *
               </label>
               <input
+                id="start-date"
                 type="date"
                 required
                 value={tripData.start_date}
@@ -276,10 +302,14 @@ const TripModal: React.FC<TripModalProps> = ({
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="start-time"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Start Time
               </label>
               <input
+                id="start-time"
                 type="time"
                 value={tripData.start_time}
                 onChange={(e) =>
@@ -292,10 +322,14 @@ const TripModal: React.FC<TripModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="end-date"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 End Date *
               </label>
               <input
+                id="end-date"
                 type="date"
                 required
                 value={tripData.end_date}
@@ -311,10 +345,14 @@ const TripModal: React.FC<TripModalProps> = ({
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="end-time"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 End Time
               </label>
               <input
+                id="end-time"
                 type="time"
                 value={tripData.end_time}
                 onChange={(e) =>

@@ -8,7 +8,7 @@ export const useShare = () => {
         await navigator.share({
           title: article.title,
           text: `Check out this article: ${article.title}`,
-          url: window.location.href,
+          url: globalThis.location.href,
         });
         return true;
       } catch (err) {
@@ -17,10 +17,11 @@ export const useShare = () => {
       }
     } else {
       try {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(globalThis.location.href);
         toast.success("Link copied to clipboard!");
         return true;
       } catch (err) {
+        console.error("Clipboard write failed", err);
         toast.error("Failed to copy link");
         return false;
       }

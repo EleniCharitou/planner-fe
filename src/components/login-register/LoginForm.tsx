@@ -20,7 +20,7 @@ const LoginForm: React.FC = () => {
       await login(loginData.email, loginData.password);
 
       // Redirect to the page the user was trying to access before login
-      const from = (location.state as any)?.from?.pathname || "/";
+      const from = location.state?.from?.pathname || "/";
       navigate(from, { replace: true });
     } catch (error) {
       console.error("Login error:", error);
@@ -54,10 +54,16 @@ const LoginForm: React.FC = () => {
 
       <div className="space-y-6">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Email</label>
+          <label
+            htmlFor="email-field"
+            className="text-sm font-medium text-gray-700"
+          >
+            Email
+          </label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
+              id="email-field"
               type="email"
               value={loginData.email}
               onChange={(e) =>
@@ -71,10 +77,16 @@ const LoginForm: React.FC = () => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Password</label>
+          <label
+            htmlFor="password-field"
+            className="text-sm font-medium text-gray-700"
+          >
+            Password
+          </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
+              id="password-field"
               type="password"
               value={loginData.password}
               onChange={(e) =>

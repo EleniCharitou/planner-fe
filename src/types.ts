@@ -49,7 +49,7 @@ export interface Column {
 export interface TripData {
   id: number;
   destination: string;
-  trip_members: { name: string; email: string }[];
+  trip_members: { id?: string; name: string; email: string }[];
   start_date: string;
   start_time: string;
   end_date: string;

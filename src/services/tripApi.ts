@@ -23,10 +23,14 @@ export const getTripById = async (id: number): Promise<TripData> => {
 
 // Create a new trip (owner is automatically set on backend)
 export const createTrip = async (
-  tripData: Omit<TripData, "id">
+  tripData: Omit<TripData, "id">,
 ): Promise<TripData> => {
   try {
-    const response = await api.post("/trip/", tripData);
+    const payload = {
+      ...tripData,
+      trip_members: tripData.trip_members.map(({ id, ...rest }) => rest),
+    };
+    const response = await api.post("/trip/", payload);
     return response.data;
   } catch (error) {
     console.error("Error creating trip:", error);
@@ -36,7 +40,7 @@ export const createTrip = async (
 
 export const updateTrip = async (
   id: number,
-  tripData: Partial<TripData>
+  tripData: Partial<TripData>,
 ): Promise<TripData> => {
   try {
     const response = await api.patch(`/trip/${id}/`, tripData);

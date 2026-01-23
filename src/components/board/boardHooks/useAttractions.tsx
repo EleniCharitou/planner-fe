@@ -111,13 +111,13 @@ export const useAttractions = (initialAttractions: AttractionsDetails[]) => {
 
       let finalInsertIndex: number;
 
-      if (overIndex !== undefined) {
-        finalInsertIndex = newItems.indexOf(targetColItems[overIndex]);
-      } else {
+      if (overIndex === undefined) {
         const lastItem = targetColItems.at(-1);
         finalInsertIndex = lastItem
           ? newItems.indexOf(lastItem) + 1
           : newItems.length;
+      } else {
+        finalInsertIndex = newItems.indexOf(targetColItems[overIndex]);
       }
 
       // Safety check. If indexOf returned -1, default to end of array

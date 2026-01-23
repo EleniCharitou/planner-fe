@@ -37,7 +37,7 @@ const PageNotFound = () => {
 
           <div className="block sm:inline-block sm:ml-4">
             <button
-              onClick={() => window.history.back()}
+              onClick={() => globalThis.history.back()}
               className="inline-flex items-center justify-center space-x-2 
                        bg-gray-500 hover:bg-gray-600 text-white font-semibold 
                        py-3 px-6 rounded-lg transition-all duration-300 

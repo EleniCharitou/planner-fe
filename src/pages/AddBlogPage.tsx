@@ -190,35 +190,7 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
                 </span>
               </label>
 
-              {!picturePreview ? (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-teal-400 transition-colors">
-                  <div className="flex flex-col items-center space-y-4">
-                    <Upload size="48px" className="text-gray-400" />
-                    <div>
-                      <label
-                        htmlFor="picture"
-                        className="cursor-pointer inline-flex items-center space-x-2 bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                      >
-                        <Camera size="18px" />
-                        <span>Choose Image</span>
-                      </label>
-                      <input
-                        id="picture"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
-                      />
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      <p>Upload a beautiful image for your article</p>
-                      <p className="text-xs mt-1">
-                        Supports: JPEG, PNG, WebP • Max size: 5MB
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
+              {picturePreview ? (
                 <div className="relative">
                   <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
                     <div className="flex items-start space-x-4">
@@ -260,6 +232,34 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
                           </button>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-teal-400 transition-colors">
+                  <div className="flex flex-col items-center space-y-4">
+                    <Upload size="48px" className="text-gray-400" />
+                    <div>
+                      <label
+                        htmlFor="picture"
+                        className="cursor-pointer inline-flex items-center space-x-2 bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                      >
+                        <Camera size="18px" />
+                        <span>Choose Image</span>
+                      </label>
+                      <input
+                        id="picture"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      <p>Upload a beautiful image for your article</p>
+                      <p className="text-xs mt-1">
+                        Supports: JPEG, PNG, WebP • Max size: 5MB
+                      </p>
                     </div>
                   </div>
                 </div>
