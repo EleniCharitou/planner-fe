@@ -6,12 +6,12 @@ const Footer = () => {
       <div className="mx-auto w-full max-w-screen-xl p-2 lg:py-6">
         <div className="md:flex md:justify-around">
           <div className="mb-2 md:mb-0">
-            <a href="#" className="flex items-center">
+            <button type="button" className="flex items-center">
               <span className="self-center text-2xl font-bold whitespace-nowrap dark:text-white flex items-center">
                 <MdCardTravel size="30px" className="mr-2" />
                 Trip planner
               </span>
-            </a>
+            </button>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:gap-6 sm:grid-cols-3">
             <div>
@@ -20,14 +20,14 @@ const Footer = () => {
               </h2>
               <ul className="text-white font-medium">
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <button type="button" className="hover:underline">
                     React
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <button type="button" className="hover:underline">
                     Tailwind CSS
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -37,14 +37,14 @@ const Footer = () => {
               </h2>
               <ul className="text-white dark:text-gray-400 font-medium">
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <button type="button" className="hover:underline">
                     Github
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <button type="button" className="hover:underline">
                     Discord
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -54,14 +54,14 @@ const Footer = () => {
               </h2>
               <ul className="text-white dark:text-gray-400 font-medium">
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <button type="button" className="hover:underline">
                     Privacy Policy
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <button type="button" className="hover:underline">
                     Terms &amp; Conditions
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -70,15 +70,12 @@ const Footer = () => {
         <hr className="border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-2" />
         <div className="sm:flex sm:items-center sm:justify-between">
           <span className="text-sm text-white sm:text-center dark:text-gray-400">
-            © 2025{" "}
-            <a href="#" className="hover:underline">
-              Charitou Eleni™
-            </a>
-            . All Rights Reserved.
+            © 2025 <span className="hover:underline">Charitou Eleni™ </span>.
+            All Rights Reserved.
           </span>
           <div className="flex mt-2 sm:justify-center sm:mt-0">
-            <a
-              href="#"
+            <button
+              type="button"
               className="text-white hover:text-gray-900 dark:hover:text-white ms-5"
             >
               <svg
@@ -95,7 +92,7 @@ const Footer = () => {
                 />
               </svg>
               <span className="sr-only">GitHub account</span>
-            </a>
+            </button>
           </div>
         </div>
       </div>

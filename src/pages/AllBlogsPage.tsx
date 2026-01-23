@@ -86,7 +86,7 @@ const AllBlogsPage = () => {
 
   const truncateContent = (content: string, maxLength: number = 150) => {
     if (content.length <= maxLength) return content;
-    return content.substr(0, maxLength) + "...";
+    return content.slice(0, maxLength) + "...";
   };
 
   const formatDate = (dateString?: string) => {
@@ -104,6 +104,12 @@ const AllBlogsPage = () => {
     setSelectedAuthor("all");
   };
 
+  const getSortLabel = () => {
+    if (sortBy === "newest") return "newest first";
+    if (sortBy === "oldest") return "oldest first";
+    return "title";
+  };
+
   return (
     <div className="min-h-screen bg-amber-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -117,7 +123,7 @@ const AllBlogsPage = () => {
                   community
                 </p>
                 <p className="text-lg opacity-75">
-                  {articles.length} article{articles.length !== 1 ? "s" : ""}{" "}
+                  {articles.length} article{articles.length == 1 ? "" : "s"}{" "}
                   available
                 </p>
               </div>
@@ -217,19 +223,14 @@ const AllBlogsPage = () => {
             <div className="mb-6 flex items-center justify-between">
               <p className="text-gray-600 font-medium">
                 {filteredArticles.length} article
-                {filteredArticles.length !== 1 ? "s" : ""} found
+                {filteredArticles.length == 1 ? "" : "s"} found
                 {searchTerm && ` for "${searchTerm}"`}
                 {selectedAuthor !== "all" && ` by ${selectedAuthor}`}
               </p>
 
               {filteredArticles.length > 0 && (
                 <p className="text-sm text-gray-500">
-                  Sorted by{" "}
-                  {sortBy === "newest"
-                    ? "newest first"
-                    : sortBy === "oldest"
-                    ? "oldest first"
-                    : "title"}
+                  Sorted by {getSortLabel()}
                 </p>
               )}
             </div>

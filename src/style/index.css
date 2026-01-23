@@ -1,11 +1,9 @@
 @import "tailwindcss";
 
-@tailwind utilities;
-
 html,
 body,
 #root {
-  @apply bg-amber-50 text-white box-border;
+  @apply bg-amber-50 text-slate-900 box-border;
 }
 
 ::-webkit-scrollbar {
