@@ -1,4 +1,4 @@
-import estimateReadTime from "../../../utilities/readTime";
+import estimateReadTime from "../../utilities/readTime";
 import ArticleActions from "./ArticleActions";
 import ArticleMetadata from "./ArticleMetadata";
 

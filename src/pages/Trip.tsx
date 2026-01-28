@@ -21,7 +21,7 @@ const Trip = () => {
   const createColumnsInDatabase = async (
     tripId: number,
     startDate: string,
-    numberOfDays: number
+    numberOfDays: number,
   ) => {
     try {
       const columns = [];
@@ -62,15 +62,16 @@ const Trip = () => {
   };
 
   const handleTripCreated = async (newTrip: TripData) => {
+    setIsCreatingTrip(true);
     try {
       const numberOfDays = calculateTripDays(
         newTrip.start_date,
-        newTrip.end_date
+        newTrip.end_date,
       );
       const columns = await createColumnsInDatabase(
         newTrip.id,
         newTrip.start_date,
-        numberOfDays
+        numberOfDays,
       );
 
       localStorage.setItem("currentTripId", newTrip.id.toString());

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import LoginForm from "../components/login-register/LoginForm";
-import RegisterForm from "../components/login-register/RegisterForm";
+import LoginForm from "../../components/login-register/LoginForm";
+import RegisterForm from "../../components/login-register/RegisterForm";
 
 interface LoginPageProps {
   initialView: "login" | "register";

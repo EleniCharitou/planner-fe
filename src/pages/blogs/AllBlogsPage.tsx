@@ -9,10 +9,15 @@ import {
   Plus,
   Filter,
 } from "lucide-react";
-import Spinner from "../components/Spinner";
-import estimateReadTime from "../utilities/readTime";
-import { BlogDetails } from "../types";
-import api from "../api";
+import Spinner from "../../components/Spinner";
+import estimateReadTime from "../../utilities/readTime";
+import { BlogDetails } from "../../types";
+import api from "../../api";
+
+export const truncateContent = (content: string, maxLength: number = 150) => {
+  if (content.length <= maxLength) return content;
+  return content.slice(0, maxLength) + "...";
+};
 
 const AllBlogsPage = () => {
   const [articles, setArticles] = useState<BlogDetails[]>([]);
@@ -82,11 +87,6 @@ const AllBlogsPage = () => {
     });
 
     setFilteredArticles(filtered);
-  };
-
-  const truncateContent = (content: string, maxLength: number = 150) => {
-    if (content.length <= maxLength) return content;
-    return content.slice(0, maxLength) + "...";
   };
 
   const formatDate = (dateString?: string) => {

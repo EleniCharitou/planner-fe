@@ -9,8 +9,8 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import Spinner from "../components/Spinner";
-import api from "../api";
+import Spinner from "../../components/Spinner";
+import api from "../../api";
 
 interface EditBlogPageProps {
   editBlog: (blog: FormData, slug: string | undefined) => Promise<void>;

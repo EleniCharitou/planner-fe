@@ -1,5 +1,5 @@
 import { FaLocationArrow } from "react-icons/fa";
-import BlogContainer from "../components/homepage/BlogContainer";
+import BlogContainer from "../../components/homepage/BlogContainer";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 

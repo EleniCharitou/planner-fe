@@ -1,15 +1,15 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import { BlogDetails } from "../types";
-import Spinner from "../components/Spinner";
+import { BlogDetails } from "../../types";
+import Spinner from "../../components/Spinner";
 import { BookOpen } from "lucide-react";
 import { toast } from "react-toastify";
-import api from "../api";
-import { useAuth } from "../context/AuthContext";
-import ErrorState from "../components/blog/components/ErrorState";
-import DeleteModal from "../sub-components/DeleteModal";
-import ArticleContent from "../components/blog/components/ArticleContent";
-import { useShare } from "../utilities/useShare";
+import api from "../../api";
+import { useAuth } from "../../context/AuthContext";
+import ErrorState from "../../components/blog/ErrorState";
+import DeleteModal from "../../sub-components/DeleteModal";
+import ArticleContent from "../../components/blog/ArticleContent";
+import { useShare } from "../../utilities/useShare";
 
 const DetailPage = () => {
   const { slug } = useParams<{ slug: string }>();

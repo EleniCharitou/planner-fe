@@ -7,15 +7,15 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import AddBlogPage from "./pages/AddBlogPage";
+import AddBlogPage from "./pages/blogs/AddBlogPage";
 import PageNotFound from "./pages/PageNotFound";
-import DetailPage from "./pages/DetailPage";
-import EditBlogPage from "./pages/EditeBlogPage";
-import LoginPage from "./new_pages/LoginPage";
+import DetailPage from "./pages/blogs/DetailPage";
+import EditBlogPage from "./pages/blogs/EditeBlogPage";
+import LoginPage from "./pages/home/LoginPage";
 import { toast } from "react-toastify";
-import NewMainLayout from "./new_pages/NewMainLayout";
-import Homepage from "./new_pages/Homepage";
-import AllBlogsPage from "./pages/AllBlogsPage";
+import NewMainLayout from "./pages/NewMainLayout";
+import Homepage from "./pages/home/Homepage";
+import AllBlogsPage from "./pages/blogs/AllBlogsPage";
 import api from "./api";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
@@ -107,7 +107,7 @@ const App = () => {
           element={<LoginPage initialView="register" />}
         />
         <Route path="*" element={<PageNotFound />} />
-      </Route>
+      </Route>,
     ),
     {
       future: {
@@ -117,7 +117,7 @@ const App = () => {
         v7_partialHydration: true,
         v7_skipActionErrorRevalidation: true,
       },
-    }
+    },
   );
   return (
     <AuthProvider>

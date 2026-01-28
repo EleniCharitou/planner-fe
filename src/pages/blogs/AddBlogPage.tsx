@@ -10,8 +10,8 @@ import {
   X,
   Upload,
 } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
-import estimateReadTime from "../utilities/readTime";
+import { useAuth } from "../../context/AuthContext";
+import estimateReadTime from "../../utilities/readTime";
 
 interface AddBlogPageProps {
   createBlog: (blog: FormData) => Promise<void>;
