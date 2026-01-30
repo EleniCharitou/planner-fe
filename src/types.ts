@@ -31,7 +31,6 @@ export interface AttractionsDetails {
     | "other";
   mapUrl?: string | null;
   ticket?: string;
-  date: string;
   cost: number;
   visited: boolean;
   position?: number;
