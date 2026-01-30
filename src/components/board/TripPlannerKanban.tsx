@@ -148,27 +148,17 @@ export default function TripPlannerKanban() {
     newAttraction: Partial<AttractionsDetails>,
   ) => {
     try {
-      let formattedDate: string | undefined = undefined;
-      if (newAttraction.date && newAttraction.date.trim() !== "") {
-        const dateObj = new Date(newAttraction.date);
-        formattedDate = dateObj.toISOString();
-      }
-
       const attractionData: Omit<AttractionsDetails, "id"> = {
         title: newAttraction.title || "",
         location: newAttraction.location || "",
         category: newAttraction.category || "other",
         mapUrl: newAttraction.mapUrl || "",
         ticket: newAttraction.ticket || "",
-        date: newAttraction.date || "",
         cost: Number(newAttraction.cost) || 0,
         visited: newAttraction.visited || false,
         column_id: creatingColumnId,
       };
 
-      if (formattedDate) {
-        attractionData.date = formattedDate;
-      }
       const response = await api.post<AttractionsDetails>(
         "/attraction/",
         attractionData,
@@ -186,26 +176,10 @@ export default function TripPlannerKanban() {
     updatedAttraction: Partial<AttractionsDetails>,
   ) => {
     try {
-      let formattedDate: string | undefined = updatedAttraction.date;
-      if (formattedDate && formattedDate.trim() !== "") {
-        if (!formattedDate.includes("T")) {
-          const dateObj = new Date(formattedDate);
-          formattedDate = dateObj.toISOString();
-        }
-      } else {
-        formattedDate = undefined;
-      }
-
       const updateData: Partial<AttractionsDetails> = {
         ...updatedAttraction,
         cost: Number(updatedAttraction.cost) || 0,
       };
-
-      if (formattedDate) {
-        updateData.date = formattedDate;
-      } else {
-        delete updateData.date;
-      }
 
       await api.patch(`/attraction/${editingAttraction?.id}/`, updateData);
       updateAttraction({

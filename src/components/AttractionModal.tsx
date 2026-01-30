@@ -24,7 +24,6 @@ const AttractionModal = ({
     category: "other",
     mapUrl: "",
     ticket: "",
-    date: "",
     cost: 0,
     visited: false,
   });
@@ -33,16 +32,6 @@ const AttractionModal = ({
 
   useEffect(() => {
     if (attraction) {
-      let displayDate = "";
-      if (attraction.date) {
-        try {
-          const dateObj = new Date(attraction.date);
-          displayDate = dateObj.toISOString().split("T")[0];
-        } catch (e) {
-          console.error("Error parsing date:", e);
-        }
-      }
-
       setFormData({
         id: attraction.id,
         column_id: attraction.column_id,
@@ -51,7 +40,6 @@ const AttractionModal = ({
         category: attraction.category,
         mapUrl: attraction.mapUrl || "",
         ticket: attraction.ticket || "",
-        date: displayDate,
         cost: attraction.cost || 0,
         visited: attraction.visited || false,
       });
@@ -64,7 +52,6 @@ const AttractionModal = ({
         category: "other",
         mapUrl: "",
         ticket: "",
-        date: "",
         cost: 0,
         visited: false,
       });
@@ -90,12 +77,6 @@ const AttractionModal = ({
       return;
     }
 
-    let formattedDate: string | undefined = undefined;
-    if (formData.date && formData.date.trim() !== "") {
-      const dateObj = new Date(formData.date);
-      formattedDate = dateObj.toISOString();
-    }
-
     const submitData: Partial<AttractionsDetails> = {
       title: formData.title.trim(),
       location: formData.location.trim(),
@@ -105,10 +86,6 @@ const AttractionModal = ({
       cost: formData.cost ? Number(Number(formData.cost).toFixed(2)) : 0,
       visited: Boolean(formData.visited),
     };
-
-    if (formattedDate) {
-      submitData.date = formattedDate;
-    }
 
     if (attraction) {
       submitData.id = formData.id;
@@ -126,7 +103,6 @@ const AttractionModal = ({
         category: "other",
         mapUrl: "",
         ticket: "",
-        date: "",
         cost: 0,
         visited: false,
       });
@@ -137,7 +113,7 @@ const AttractionModal = ({
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value, type } = e.target;
 
