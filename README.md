@@ -1,54 +1,47 @@
-# React + TypeScript + Vite
+# TravelPlanner Frontend
+[![React: 19.0](https://img.shields.io/badge/React-19.0-61DAFB?style=flat&logo=react)](https://react.dev/)
+[![Vite: 6.2](https://img.shields.io/badge/Vite-6.2-646CFF?style=flat&logo=vite)](https://vitejs.dev/)
+[![TypeScript: 5.7](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind: 4.0](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The client-side interface for TravelPlanner, built for a fluid, interactive trip-planning and journaling experience. This application features a Kanban-style board for itinerary management, secure authentication flows, and responsive design.  
 
-Currently, two official plugins are available:
+* * *
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Getting Started  
+  
+### 1\. Prerequisites
+* **Node.js (LTS):** Required for the runtime environment and `npm` package manager.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 2\. Installation & Setup
+Clone the repository and navigate to the frontend directory:
 ```
+# Install project dependencies
+npm install
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+# Configure environment
+cp .env.template .env
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+# Run project
+    npm run dev
 ```
+The application will be available at `http://localhost:5173`.  
+
+* * *
+
+⚙️ Development Standards
+
+* **Drag & Drop:** Implemented using `@dnd-kit` for accessible, modular reordering logic.
+
+* **Testing:** Continuous quality assurance via `Vitest` and `SonarQube` integration.
+
+* **Authentication:** `JWT-based` session management with automatic `axios` interceptors for secure API communication.
+
+### Project Scripts
+
+| **Command** | **Description** |
+| --- | --- |
+| `npm run dev` | Starts the Vite development server |
+| `npm run build` | Builds the production-ready application |
+| `npm run test` | Executes the Vitest testing suite |
+| `npm run preview` | Previews the production build locally |
