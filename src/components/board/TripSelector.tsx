@@ -49,6 +49,7 @@ export const TripSelector: React.FC<TripSelectorProps> = ({
           Your Trips:
         </h2>
         <button
+          type="button"
           onClick={onCreateTrip}
           className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
         >
@@ -61,6 +62,7 @@ export const TripSelector: React.FC<TripSelectorProps> = ({
         <div className="text-center py-8">
           <p className="text-gray-600 mb-4">You don't have any trips yet.</p>
           <button
+            type="button"
             onClick={onCreateTrip}
             className="px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
           >

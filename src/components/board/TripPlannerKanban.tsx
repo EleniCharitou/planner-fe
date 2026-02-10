@@ -334,6 +334,11 @@ export default function TripPlannerKanban() {
           }}
         />
       )}
+      <TripModal
+        isOpen={isCreateTripModalOpen}
+        onClose={() => setIsCreateTripModalOpen(false)}
+        onSuccess={handleTripCreated}
+      />
     </div>
   );
 }
