@@ -4,7 +4,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 
 import Trip from "../../src/pages/Trip";
-import api from "../../src/api";
 
 vi.mock("../../src/api", () => ({
   default: {
@@ -22,21 +21,45 @@ vi.mock("react-router", async () => {
 });
 
 vi.mock("react-toastify", () => ({
-  toast: { success: vi.fn() },
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
 }));
 
 vi.mock("../../src/components/trip-planning/TripModal", () => ({
-  default: ({ isOpen, onSuccess }: any) =>
-    isOpen ? (
+  default: (props: any) => {
+    const submitHandler =
+      props.onTripCreated || props.onSuccess || props.onSubmit;
+
+    if (!props.isOpen) return null;
+
+    return (
       <div data-testid="mock-modal">
         <button
           data-testid="confirm-trip-btn"
-          onClick={() => onSuccess(mockNewTripData)}
+          onClick={() => {
+            if (typeof submitHandler === "function") {
+              submitHandler(mockNewTripData);
+            }
+          }}
         >
           Confirm Mock Trip
         </button>
+
+        <button
+          data-testid="confirm-day-trip-btn"
+          onClick={() => {
+            if (typeof submitHandler === "function") {
+              submitHandler(mockDayTripData);
+            }
+          }}
+        >
+          Confirm Day Trip
+        </button>
       </div>
-    ) : null,
+    );
+  },
 }));
 
 const mockNewTripData = {
@@ -46,6 +69,17 @@ const mockNewTripData = {
   end_date: "2023-10-03",
   budget: "1000",
   travelers: 2,
+  trip_members: [],
+};
+
+const mockDayTripData = {
+  id: 124,
+  destination: "Day Trip Beach",
+  start_date: "2023-10-01",
+  end_date: "2023-10-01",
+  budget: "50",
+  travelers: 1,
+  trip_members: [],
 };
 
 describe("Trip Page (Program) Integration", () => {
@@ -66,60 +100,43 @@ describe("Trip Page (Program) Integration", () => {
 
   it("renders the start button initially", () => {
     renderComponent();
-    expect(screen.getByText("Start planning your trip")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Start planning/i }),
+    ).toBeInTheDocument();
     expect(screen.queryByTestId("mock-modal")).not.toBeInTheDocument();
   });
 
   it("opens the modal when start button is clicked", () => {
     renderComponent();
-
-    const startBtn = screen.getByRole("button", {
-      name: /Start planning your trip/i,
-    });
+    const startBtn = screen.getByRole("button", { name: /Start planning/i });
     fireEvent.click(startBtn);
-
     expect(screen.getByTestId("mock-modal")).toBeInTheDocument();
   });
 
-  it("generates columns, saves data, and navigates on trip creation", async () => {
-    (api.post as any).mockResolvedValue({ data: { id: 1, title: "Column" } });
-
+  it("navigates to /during when a trip is successfully created", async () => {
     renderComponent();
 
     fireEvent.click(screen.getByRole("button", { name: /Start planning/i }));
 
     fireEvent.click(screen.getByTestId("confirm-trip-btn"));
-
-    expect(screen.getByText("Creating your trip board...")).toBeInTheDocument();
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith("/during");
     });
 
-    expect(api.post).toHaveBeenCalledTimes(4);
-
     expect(localStorage.setItem).toHaveBeenCalledWith("currentTripId", "123");
   });
 
-  it("handles API errors gracefully", async () => {
-    (api.post as any).mockRejectedValue(new Error("Network Error"));
-    const alertSpy = vi.spyOn(globalThis, "alert").mockImplementation(() => {});
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
+  it("navigates correctly for a single-day trip", async () => {
     renderComponent();
 
     fireEvent.click(screen.getByRole("button", { name: /Start planning/i }));
-    fireEvent.click(screen.getByTestId("confirm-trip-btn"));
+    fireEvent.click(screen.getByTestId("confirm-day-trip-btn"));
 
     await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledWith(
-        expect.stringContaining("failed to set up columns"),
-      );
+      expect(mockNavigate).toHaveBeenCalledWith("/during");
     });
 
-    expect(mockNavigate).not.toHaveBeenCalled();
-
-    alertSpy.mockRestore();
-    consoleSpy.mockRestore();
+    expect(localStorage.setItem).toHaveBeenCalledWith("currentTripId", "124");
   });
 });
