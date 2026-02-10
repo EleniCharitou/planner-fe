@@ -1,7 +1,6 @@
 import { useState } from "react";
 import TripModal from "../components/trip-planning/TripModal";
 import { TripData } from "../types";
-import api from "../api";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 
@@ -10,79 +9,16 @@ const Trip = () => {
   const [isCreatingTrip, setIsCreatingTrip] = useState(false);
   const navigate = useNavigate();
 
-  const calculateTripDays = (startDate: string, endDate: string) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const timeDifference = end.getTime() - start.getTime();
-    const dayDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-    return dayDifference + 1;
-  };
-
-  const createColumnsInDatabase = async (
-    tripId: number,
-    startDate: string,
-    numberOfDays: number,
-  ) => {
-    try {
-      const columns = [];
-
-      const backlogResponse = await api.post("/column/", {
-        trip_id: tripId,
-        title: "🎯 Attractions to Visit",
-        position: 0,
-      });
-      columns.push(backlogResponse.data);
-
-      const start = new Date(startDate);
-
-      for (let i = 0; i < numberOfDays; i++) {
-        const currentDate = new Date(start);
-        currentDate.setDate(start.getDate() + i);
-
-        const formattedDate = currentDate.toLocaleDateString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-        });
-
-        const dayResponse = await api.post("/column/", {
-          trip_id: tripId,
-          title: `Day ${i + 1} - ${formattedDate}`,
-          position: i + 1,
-        });
-
-        columns.push(dayResponse.data);
-      }
-
-      return columns;
-    } catch (error) {
-      console.error("Error creating columns:", error);
-      throw error;
-    }
-  };
-
   const handleTripCreated = async (newTrip: TripData) => {
     setIsCreatingTrip(true);
     try {
-      const numberOfDays = calculateTripDays(
-        newTrip.start_date,
-        newTrip.end_date,
-      );
-      const columns = await createColumnsInDatabase(
-        newTrip.id,
-        newTrip.start_date,
-        numberOfDays,
-      );
-
       localStorage.setItem("currentTripId", newTrip.id.toString());
       localStorage.setItem("tripInfo", JSON.stringify(newTrip));
-      localStorage.setItem("tripColumns", JSON.stringify(columns));
 
       toast.success(`Trip to ${newTrip.destination} created successfully!`);
       navigate(`/during`);
     } catch (error) {
       console.error("Error creating trip:", error);
-      alert("Trip created but failed to set up columns. Please try again.");
       setIsCreatingTrip(false);
     } finally {
       setShowModal(false);
