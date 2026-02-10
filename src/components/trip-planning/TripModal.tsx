@@ -110,7 +110,7 @@ const TripModal: React.FC<TripModalProps> = ({
 
     // Check date logic
     if (tripData.start_date && tripData.end_date) {
-      if (new Date(tripData.start_date) >= new Date(tripData.end_date)) {
+      if (new Date(tripData.start_date) > new Date(tripData.end_date)) {
         errors.end_date = "End date must be after start date";
       }
     }
