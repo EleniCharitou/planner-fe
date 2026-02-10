@@ -4,7 +4,11 @@ import { ClipLoader } from "react-spinners";
 const override: CSSProperties = {
   display: "block",
   margin: "0 auto",
-  borderColor: "purple",
+  borderColor: "teal",
+  borderStyle: "solid",
+  borderWidth: "4px",
+  borderRadius: "50%",
+  animationDuration: "2s",
 };
 
 interface SpinnerProps {
@@ -18,6 +22,7 @@ const Spinner: React.FC<SpinnerProps> = ({ loading }) => {
         loading={loading}
         cssOverride={override}
         size={100}
+        speedMultiplier={0.5}
         aria-label="Loading Spinner"
         data-testid="loader"
       />
