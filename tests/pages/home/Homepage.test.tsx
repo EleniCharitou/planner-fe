@@ -69,13 +69,6 @@ describe("Homepage Integration", () => {
     expect(screen.getByTestId("blog-container")).toBeInTheDocument();
   });
 
-  it("contains the correct link to articles", () => {
-    renderComponent();
-
-    const link = screen.getByRole("link", { name: /Explore more articles/i });
-    expect(link).toHaveAttribute("href", "/articles");
-  });
-
   it('renders the "Generate video" button as disabled/inactive visually', () => {
     renderComponent();
 

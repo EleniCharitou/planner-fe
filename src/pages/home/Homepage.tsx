@@ -90,19 +90,8 @@ function Homepage() {
           </button>
 
           {/* Fourth rectangle: 3 columns, 1 row */}
-          <div className="col-span-3 row-span-1 bg-teal-500 rounded-lg shadow-lg p-4">
-            <div className="text-white text-left flex flex-col">
-              <h2 className="text-2xl font-semibold mb-2">Useful articles:</h2>
-              <div className="flex-1">
-                <BlogContainer />
-              </div>
-              <Link
-                to="/articles"
-                className="flex items-center justify-center pt-2 hover:cursor-pointer hover:text-teal-800"
-              >
-                Explore more articles
-              </Link>
-            </div>
+          <div className="col-span-3 row-span-1 bg-teal-500 rounded-lg shadow-lg p-4 relative overflow-hidden">
+            <BlogContainer />
           </div>
         </div>
       </div>
