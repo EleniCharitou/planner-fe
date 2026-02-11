@@ -114,10 +114,12 @@ const AllBlogsPage = () => {
     <div className="min-h-screen bg-amber-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl shadow-lg p-8 text-blacke">
+          <div className="bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl shadow-lg p-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-5xl font-bold mb-4">Travel Articles</h1>
+                <h1 className="text-5xl font-bold mb-4 text-teal-900">
+                  Travel Articles
+                </h1>
                 <p className="text-xl opacity-90 mb-2">
                   Discover amazing destinations and travel tips from our
                   community
@@ -214,7 +216,7 @@ const AllBlogsPage = () => {
 
         {loading && (
           <div className="flex justify-center items-center py-20">
-            <Spinner loading={loading} />
+            <Spinner />
           </div>
         )}
 

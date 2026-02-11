@@ -22,7 +22,7 @@ const BlogContainer = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto">
       {loading ? (
         <div className="col-span-full flex justify-center py-10">
-          <Spinner loading={loading} />
+          <Spinner />
         </div>
       ) : (
         blogs.slice(0, 3).map((blog) => (

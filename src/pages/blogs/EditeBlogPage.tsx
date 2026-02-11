@@ -90,7 +90,7 @@ const EditBlogPage: React.FC<EditBlogPageProps> = ({ editBlog }) => {
   if (loading) {
     return (
       <div className="min-h-screen bg-amber-50 flex justify-center items-center">
-        <Spinner loading={loading} />
+        <Spinner />
       </div>
     );
   }
