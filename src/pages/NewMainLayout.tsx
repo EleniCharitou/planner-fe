@@ -89,8 +89,16 @@ function NewMainLayout() {
               {isAuthenticated ? (
                 <div className="flex items-center space-x-2">
                   <div className="flex items-center space-x-2 text-white">
-                    <User size="18px" />
-                    <span className="text-sm">{user?.name || user?.email}</span>
+                    <Link
+                      to="/profile"
+                      onClick={closeMobileMenu}
+                      className="flex items-center space-x-2 text-white hover:text-teal-200 transition-colors duration-200 py-2"
+                    >
+                      <User size="18px" />
+                      <span className="text-sm">
+                        {user?.name || user?.email}
+                      </span>
+                    </Link>
                   </div>
                   <button
                     onClick={handleLogout}
@@ -180,10 +188,16 @@ function NewMainLayout() {
                 {isAuthenticated ? (
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center text-white space-x-2 py-2">
-                      <User size="18px" />
-                      <span className="text-sm">
-                        {user?.name || user?.email}
-                      </span>
+                      <Link
+                        to="/profile"
+                        onClick={closeMobileMenu}
+                        className="flex items-center space-x-2 text-white hover:text-teal-200 transition-colors duration-200 py-2"
+                      >
+                        <User size="18px" />
+                        <span className="text-sm">
+                          {user?.name || user?.email}
+                        </span>
+                      </Link>
                     </div>
                     <button
                       onClick={handleLogout}

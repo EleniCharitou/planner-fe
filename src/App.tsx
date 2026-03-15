@@ -19,6 +19,7 @@ import AllBlogsPage from "./pages/blogs/AllBlogsPage";
 import api from "./api";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import Profile from "./pages/Profile";
 
 const App = () => {
   const createBlog = (data: FormData) => {
@@ -105,6 +106,14 @@ const App = () => {
         <Route
           path="/register"
           element={<LoginPage initialView="register" />}
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
         />
         <Route path="*" element={<PageNotFound />} />
       </Route>,

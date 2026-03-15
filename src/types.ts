@@ -58,11 +58,14 @@ export interface TripData {
   duration_days?: number;
 }
 
-export interface User {
-  id: number;
-  email: string;
-  last_name: string;
+export interface BaseUser {
   name: string;
+  last_name: string;
+  email: string;
+}
+
+export interface User extends BaseUser {
+  id: number;
 }
 
 export interface LoginCredentials {
@@ -70,11 +73,14 @@ export interface LoginCredentials {
   password: string;
 }
 
-export interface RegisterCredentials {
-  email: string;
+export interface RegisterCredentials extends BaseUser {
   password: string;
-  name: string;
-  last_name: string;
+}
+
+export interface UpdateProfileData extends BaseUser {
+  current_password?: string;
+  new_password?: string;
+  confirm_password?: string;
 }
 
 export interface AuthResponse {
