@@ -40,7 +40,7 @@ const Trip = () => {
           disabled={isCreatingTrip}
           className="group relative text-2xl font-semibold bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-2xl p-8 shadow-2xl
                      hover:from-teal-600 hover:to-teal-700 hover:scale-110 transition-all duration-300 hover:shadow-amber-200/50
-                     hover:shadow-2xl hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                     hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="relative flex items-center gap-3">
             <span>✨</span>

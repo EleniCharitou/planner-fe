@@ -308,7 +308,7 @@ const AddBlogPage: React.FC<AddBlogPageProps> = ({ createBlog }) => {
                 disabled={isSubmitting || !title.trim() || !content.trim()}
                 className="flex-1 inline-flex items-center justify-center space-x-2 bg-gradient-to-r bg-teal-500 
                          text-white font-bold py-3 px-6 rounded-lg transition-colors hover:bg-teal-700
-                         hover:cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-700"
+                         disabled:cursor-not-allowed disabled:bg-gray-700"
               >
                 {isSubmitting ? (
                   <>

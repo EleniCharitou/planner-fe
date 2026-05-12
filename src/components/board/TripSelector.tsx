@@ -101,7 +101,7 @@ export const TripSelector: React.FC<TripSelectorProps> = ({
                     <button
                       onClick={handleDelete}
                       disabled={deleting}
-                      className="ml-auto px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed hover: cursor-pointer"
+                      className="ml-auto px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Trash2 size={14} />
                       {deleting ? "Deleting..." : "Delete Trip"}

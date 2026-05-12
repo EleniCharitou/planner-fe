@@ -214,7 +214,7 @@ const EditBlogPage: React.FC<EditBlogPageProps> = ({ editBlog }) => {
               <div className="pt-6 flex gap-4">
                 <button
                   type="submit"
-                  className="flex-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold py-4 px-6 rounded-lg hover:shadow-lg transition-all transform hover:scale-[1.01] hover:cursor-pointer"
+                  className="flex-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold py-4 px-6 rounded-lg hover:shadow-lg transition-all transform hover:scale-[1.01]"
                 >
                   <Save size="20px" />
                   <span>Update Article</span>
