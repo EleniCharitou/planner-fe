@@ -2,32 +2,31 @@ import { User } from "../../types";
 
 interface ProfileDisplayProps {
   user: User;
-  onEdit: () => void;
 }
 
-const ProfileDisplay: React.FC<ProfileDisplayProps> = ({ user, onEdit }) => {
+const ProfileDisplay: React.FC<ProfileDisplayProps> = ({ user }) => {
   return (
-    <div className="flex flex-col gap-4 text-lg">
-      <p>
-        <strong className="text-gray-700 mr-2">First Name:</strong>
-        {user.name}
-      </p>
-      <p>
-        <strong className="text-gray-700 mr-2">Last Name:</strong>
-        {user.last_name}
-      </p>
-      <p>
-        <strong className="text-gray-700 mr-2">Email:</strong>
-        {user.email}
-      </p>
-
-      <div className="w-full flex justify-end mt-4">
-        <button
-          onClick={onEdit}
-          className="px-6 py-2 bg-teal-500 text-white font-medium rounded-lg hover:bg-teal-600 transition-colors"
-        >
-          Edit
-        </button>
+    <div className="flex flex-col min-w-4 text-lg">
+      <div className="bg-slate-100 rounded-t-none rounded-xl px-8 py-4 flex flex-col gap-4">
+        <p className="text-xs font-bold text-slate-500 mb-0.5">
+          ACCOUNT DETAILS
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <p className="text-xs text-slate-500 mb-0.5">FIRST NAME</p>
+            <p className="text-sm font-medium text-slate-700">{user.name}</p>
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 mb-0.5">LAST NAME</p>
+            <p className="text-sm font-medium text-slate-700">
+              {user.last_name}
+            </p>
+          </div>
+          <div className="col-span-2">
+            <p className="text-xs text-slate-500 mb-0.5">EMAIL</p>
+            <p className="text-sm font-medium text-slate-700">{user.email}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
