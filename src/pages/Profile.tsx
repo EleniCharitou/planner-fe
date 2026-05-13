@@ -8,6 +8,7 @@ import {
 } from "../services/profileApi";
 import ProfileEdit from "../components/profile/ProfileEdit";
 import ProfileDisplay from "../components/profile/ProfileDisplay";
+import { Edit2 } from "lucide-react";
 
 const EMPTY_PASSWORDS = {
   current_password: "",
@@ -91,9 +92,7 @@ const Profile: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-8 bg-gradient-to-br from-amber-100 via-teal-300 to-teal-600">
-      <div className="w-[50%] max-w-2xl min-h-fit bg-amber-50 rounded-3xl p-8 mx-auto shadow-lg text-gray-800">
-        <h2 className="text-2xl font-bold mb-6 text-teal-900">User Profile</h2>
-
+      <div className="w-[40%] max-w-2xl min-h-fit mx-auto">
         {feedback.message && (
           <div
             className={`p-4 mb-6 rounded-lg font-medium ${
@@ -106,19 +105,44 @@ const Profile: React.FC = () => {
           </div>
         )}
 
-        {isEditing ? (
-          <ProfileEdit
-            profile={profile}
-            showPasswords={showPasswords}
-            onTogglePassword={handleTogglePassword}
-            onChange={handleChange}
-            onSave={handleSave}
-            onCancel={handleCancel}
-          />
-        ) : (
-          user && (
-            <ProfileDisplay user={user} onEdit={() => setIsEditing(true)} />
-          )
+        {user && (
+          <div className="bg-teal-700 rounded-xl border border-teal-300">
+            <div className="relative flex items-center justify-between p-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-teal-400 text-white text-4xl border-teal-200 border-3 gap-6 m-4">
+                <span>{user.name.charAt(0).toUpperCase()}</span>
+              </div>
+              {!isEditing && (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="p-2 hover:bg-teal-100 hover:text-teal-700 transition-colors text-sm text-medium inline-flex items-center gap-1 text-white border-1 border-teal-300 rounded-lg"
+                >
+                  Edit profile <Edit2 className="w-3.5 h-3.5 ml-1" />
+                </button>
+              )}
+              {isEditing && (
+                <p className="absolute top-0 right-0 text-sm text-slate-200 italic bg-teal-400/30 rounded-lg rounded-tl-none px-2 py-1">
+                  Editing mode
+                </p>
+              )}
+            </div>
+            <p className="text-white text-left text-sm text-medium pl-6 -mt-4 m-2">
+              {user.name} {user.last_name} <br />
+              {user.email}
+            </p>
+
+            {isEditing ? (
+              <ProfileEdit
+                profile={profile}
+                showPasswords={showPasswords}
+                onTogglePassword={handleTogglePassword}
+                onChange={handleChange}
+                onSave={handleSave}
+                onCancel={handleCancel}
+              />
+            ) : (
+              <ProfileDisplay user={user} />
+            )}
+          </div>
         )}
       </div>
     </div>

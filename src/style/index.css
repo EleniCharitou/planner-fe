@@ -19,3 +19,7 @@ body,
 .task > ::-webkit-scrollbar-thumb {
   @apply bg-white rounded;
 }
+
+button {
+  @apply hover:cursor-pointer;
+}

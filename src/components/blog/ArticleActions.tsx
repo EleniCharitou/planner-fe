@@ -26,7 +26,7 @@ const ArticleActions = ({
         </Link>
         <button
           onClick={onDelete}
-          className="flex items-center space-x-1 text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg hover:cursor-pointer"
+          className="flex items-center space-x-1 text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg"
         >
           <Trash2 size="18px" />
           <span className="hidden sm:inline">Delete</span>
@@ -35,7 +35,7 @@ const ArticleActions = ({
     )}
     <button
       onClick={onShare}
-      className="flex items-center space-x-1 text-teal-500 hover:bg-teal-50 px-3 py-2 rounded-lg hover:cursor-pointer"
+      className="flex items-center space-x-1 text-teal-500 hover:bg-teal-50 px-3 py-2 rounded-lg"
     >
       <Share2 size="18px" />
       <span className="hidden sm:inline">Share</span>

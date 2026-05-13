@@ -55,7 +55,7 @@ function Homepage() {
           <button
             onClick={handlePlanTripClick}
             className="col-span-1 row-span-1 bg-teal-500 rounded-lg shadow-lg flex items-center justify-center
-                        hover:bg-teal-800 hover:cursor-pointer relative overflow-visible transition-all 
+                        hover:bg-teal-800 relative overflow-visible transition-all 
                         duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl hover:shadow-teal-500/50 group"
           >
             <div

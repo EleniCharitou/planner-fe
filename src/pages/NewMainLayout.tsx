@@ -102,7 +102,7 @@ function NewMainLayout() {
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-1 text-white hover:text-teal-800 transition-colors duration-200 px-2 py-2 rounded-lg hover:bg-teal-500 hover:cursor-pointer"
+                    className="flex items-center space-x-1 text-white hover:text-teal-800 transition-colors duration-200 px-2 py-2 rounded-lg hover:bg-teal-500"
                   >
                     <LogOut size="18px" />
                     <span>Logout</span>

@@ -284,14 +284,14 @@ const AttractionModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 min-w-[120px] max-w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-teal-200 hover:cursor-pointer transition-colors font-medium"
+            className="flex-1 min-w-[120px] max-w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-teal-200 transition-colors font-medium"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className="flex-1 min-w-[120px] max-w-full px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-semibold shadow-lg hover:from-teal-600 hover:to-teal-800 hover:cursor-pointer transition-all duration-300"
+            className="flex-1 min-w-[120px] max-w-full px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-semibold shadow-lg hover:from-teal-600 hover:to-teal-800 transition-all duration-300"
           >
             {attraction ? "Update Attraction" : "Create Attraction"}
           </button>

@@ -34,13 +34,13 @@ const DeleteModal = ({
           <button
             onClick={onConfirm}
             disabled={isDeleting}
-            className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 hover:cursor-pointer"
+            className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50"
           >
             {isDeleting ? "Deleting..." : "Yes, Delete Article"}
           </button>
           <button
             onClick={onCancel}
-            className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors hover:cursor-pointer"
+            className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors"
           >
             Cancel
           </button>
